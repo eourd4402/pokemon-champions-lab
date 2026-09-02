@@ -11,7 +11,7 @@
 <meta content="Champions Stat Lab" name="apple-mobile-web-app-title"/>
 <link href="./manifest.webmanifest" rel="manifest"/>
 <link href="./icons/icon-180.png" rel="apple-touch-icon"/>
-<title>Pokémon Champions Stat Lab v16.8 Offline Core Data</title>
+<title>Pokémon Champions Stat Lab v16.9 Update Control</title>
 <style>
     :root {
       --bg: #f5f7fb;
@@ -3365,6 +3365,56 @@
         white-space:nowrap;
       }
     }
+
+
+    /* ===== v16.9 visible version + explicit update control ===== */
+    .app-version-status {
+      font-weight:900;
+      letter-spacing:.01em;
+    }
+
+    .app-update-status.update-ready {
+      font-weight:900;
+    }
+
+    .app-update-btn {
+      border-color:#b9c9ee;
+      background:#eef4ff;
+      color:#2458b7;
+      font-weight:900;
+    }
+
+    .app-update-btn[hidden] {
+      display:none !important;
+    }
+
+    @media (max-width:720px) {
+      .pwa-top-actions {
+        flex-wrap:wrap;
+      }
+
+      .app-version-status,
+      .app-update-status,
+      .app-update-btn {
+        min-height:30px;
+      }
+
+      .app-version-status {
+        display:inline-flex !important;
+      }
+
+      .app-update-status {
+        max-width:150px;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+      }
+
+      .app-update-btn {
+        padding:6px 9px;
+        font-size:9px;
+      }
+    }
 </style>
 </head>
 <body>
@@ -3374,11 +3424,11 @@
 <h1>Pokémon Stat Lab</h1>
 <p>PC에서는 좌우 분석 워크스페이스, 모바일에서는 접이식 샘플과 하단 메뉴로 같은 계산기를 사용합니다.</p>
 </div>
-<div class="pwa-top-actions">
+<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v16.9</span>
 <button class="pwa-install-btn" hidden="" id="pwaInstallBtn" type="button">앱 설치</button>
 <span class="pwa-status" id="pwaStatus" title="PWA 상태">웹 실행</span>
-<div class="badge">Pokémon Champions · v16.8 · Offline Data</div>
-<span class="pwa-status offline-data-status" id="offlineDataStatus">오프라인 데이터 준비 중</span></div>
+<div class="badge">Pokémon Champions · v16.9 · Update Control</div>
+<span class="pwa-status offline-data-status" id="offlineDataStatus">오프라인 데이터 준비 중</span><span class="pwa-status app-update-status" id="appUpdateStatus">최신 버전 확인 중</span><button class="pwa-install-btn app-update-btn" hidden="True" id="applyAppUpdate" type="button">업데이트 적용</button></div>
 </div>
 <div class="layout">
 <aside class="panel sidebar" id="currentSamplePanel"><div class="mobile-persistent-sample" id="mobilePersistentSample">
@@ -8456,16 +8506,32 @@ render();
 })();
 </script><script>
 (() => {
-  const statusEl = document.getElementById('pwaStatus');
   const installBtn = document.getElementById('pwaInstallBtn');
-  let deferredInstallPrompt = null;
-  let reloadingForUpdate = false;
+  const statusEl = document.getElementById('pwaStatus');
+  const updateStatusEl = document.getElementById('appUpdateStatus');
+  const updateBtn = document.getElementById('applyAppUpdate');
+  const versionEl = document.getElementById('appVersionStatus');
 
-  const setPwaStatus = (text, mode='') => {
+  const APP_VERSION_LABEL = 'v16.9';
+  if (versionEl) versionEl.textContent = APP_VERSION_LABEL;
+
+  let deferredPrompt = null;
+  let waitingWorker = null;
+  let refreshing = false;
+
+  function setPwaStatus(text, mode='') {
     if (!statusEl) return;
     statusEl.textContent = text;
-    statusEl.className = `pwa-status${mode ? ' ' + mode : ''}`;
-  };
+    statusEl.classList.toggle('ready', mode === 'ready');
+  }
+
+  function setUpdateStatus(text, ready=false) {
+    if (updateStatusEl) {
+      updateStatusEl.textContent = text;
+      updateStatusEl.classList.toggle('update-ready', !!ready);
+    }
+    if (updateBtn) updateBtn.hidden = !ready;
+  }
 
   const isStandalone =
     window.matchMedia?.('(display-mode: standalone)').matches ||
@@ -8485,71 +8551,82 @@ render();
 
   window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault();
-    deferredInstallPrompt = event;
+    deferredPrompt = event;
     if (installBtn) installBtn.hidden = false;
-    setPwaStatus('설치 가능', 'ready');
   });
 
   installBtn?.addEventListener('click', async () => {
-    if (!deferredInstallPrompt) return;
-    const prompt = deferredInstallPrompt;
-    deferredInstallPrompt = null;
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    try { await deferredPrompt.userChoice; } catch (_) {}
+    deferredPrompt = null;
     installBtn.hidden = true;
-    await prompt.prompt();
-    try { await prompt.userChoice; } catch (_) {}
   });
 
   window.addEventListener('appinstalled', () => {
-    deferredInstallPrompt = null;
     if (installBtn) installBtn.hidden = true;
-    setPwaStatus('설치 완료', 'ready');
+    setPwaStatus('앱 설치됨', 'ready');
   });
 
-  if (!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) {
-    return;
+  async function watchRegistration(registration) {
+    // If an update was already downloaded before this page opened.
+    if (registration.waiting && navigator.serviceWorker.controller) {
+      waitingWorker = registration.waiting;
+      setUpdateStatus('새 버전 준비됨', true);
+    } else {
+      setUpdateStatus('최신 버전 사용 중', false);
+    }
+
+    registration.addEventListener('updatefound', () => {
+      const installing = registration.installing;
+      if (!installing) return;
+
+      setUpdateStatus('새 버전 다운로드 중', false);
+
+      installing.addEventListener('statechange', () => {
+        if (installing.state === 'installed') {
+          if (navigator.serviceWorker.controller) {
+            waitingWorker = registration.waiting || installing;
+            setUpdateStatus('새 버전 준비됨', true);
+          } else {
+            setUpdateStatus('최신 버전 사용 중', false);
+          }
+        }
+      });
+    });
+
+    // Check once now, then periodically.
+    try { await registration.update(); } catch (_) {}
+    window.setInterval(() => {
+      registration.update().catch(() => {});
+    }, 60 * 60 * 1000);
   }
 
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (reloadingForUpdate) return;
-    reloadingForUpdate = true;
-    setPwaStatus('새 버전 적용 중', 'updating');
-    // 새 서비스워커가 제어권을 얻는 즉시 최신 index.html을 다시 읽는다.
-    window.location.reload();
+  updateBtn?.addEventListener('click', () => {
+    if (!waitingWorker) return;
+    updateBtn.disabled = true;
+    setUpdateStatus('업데이트 적용 중', false);
+    waitingWorker.postMessage({type:'SKIP_WAITING'});
   });
 
-  window.addEventListener('load', async () => {
-    try {
-      const registration = await navigator.serviceWorker.register('./sw.js', {
-        scope: './',
-        updateViaCache: 'none'
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+
+    navigator.serviceWorker.register('./sw.js', {
+      scope: './',
+      updateViaCache: 'none'
+    })
+      .then(watchRegistration)
+      .catch(() => {
+        setUpdateStatus('업데이트 확인 실패', false);
       });
-
-      if (isStandalone) setPwaStatus('앱 실행 중', 'ready');
-
-      // 앱을 열 때마다 최신 서비스워커 확인.
-      registration.update().catch(() => {});
-
-      // 오래 켜두는 경우에도 1시간마다 업데이트 확인.
-      window.setInterval(() => {
-        registration.update().catch(() => {});
-      }, 60 * 60 * 1000);
-
-      registration.addEventListener('updatefound', () => {
-        const worker = registration.installing;
-        if (!worker) return;
-        setPwaStatus('업데이트 확인 중', 'updating');
-        worker.addEventListener('statechange', () => {
-          if (worker.state === 'installed' && navigator.serviceWorker.controller) {
-            setPwaStatus('새 버전 적용 중', 'updating');
-          } else if (worker.state === 'activated') {
-            setPwaStatus('최신 버전', 'ready');
-          }
-        });
-      });
-    } catch (err) {
-      setPwaStatus('PWA 등록 실패');
-    }
-  });
+  } else {
+    setUpdateStatus('웹 배포 시 업데이트 지원', false);
+  }
 })();
 </script>
 <script>

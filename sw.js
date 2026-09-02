@@ -1,4 +1,4 @@
-const APP_VERSION = 'pcl-v16-8-offline-core-data-20260902-1';
+const APP_VERSION = 'pcl-v16-9-update-control-20260902-1';
 const SHELL_CACHE = `${APP_VERSION}-shell`;
 const RUNTIME_CACHE = `${APP_VERSION}-runtime`;
 
@@ -41,7 +41,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(SHELL_CACHE)
       .then(cache => cache.addAll(SHELL_FILES))
-      .then(() => self.skipWaiting())
+      
   );
 });
 
@@ -109,6 +109,12 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('message', event => {
   const data=event.data||{};
+
+  if(data.type==='SKIP_WAITING'){
+    self.skipWaiting();
+    return;
+  }
+
   if(data.type==='PRECACHE_CORE_DATA'){
     event.waitUntil(precacheCoreData());
   }
