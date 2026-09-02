@@ -11,7 +11,7 @@
 <meta content="Champions Stat Lab" name="apple-mobile-web-app-title"/>
 <link href="./manifest.webmanifest" rel="manifest"/>
 <link href="./icons/icon-180.png" rel="apple-touch-icon"/>
-<title>Pokémon Champions Stat Lab v17.2</title>
+<title>Pokémon Champions Stat Lab v17.3 Mega Restore</title>
 <style>
     :root {
       --bg: #f5f7fb;
@@ -3619,6 +3619,40 @@
     font-size:7.5px;
   }
 }
+
+
+/* ===== v17.3 Mega form restore ===== */
+.form-field {
+  position:relative;
+}
+
+.form-field #pokemonForm:not(:disabled) {
+  border-color:#c9d7f4;
+  background:#fbfcff;
+}
+
+#megaNote {
+  font-weight:700;
+}
+
+@media (max-width:720px) {
+  .mobile-quick-form-field {
+    margin-bottom:7px;
+  }
+
+  .mobile-quick-form-field > small {
+    display:block;
+    margin-top:3px;
+    color:#667085;
+    font-size:7px;
+    line-height:1.3;
+  }
+
+  #mobileQuickForm {
+    border-color:#c9d7f4;
+    background:#fbfcff;
+  }
+}
 </style>
 </head>
 <body>
@@ -3628,10 +3662,10 @@
 <h1>Pokémon Stat Lab</h1>
 <p>PC에서는 좌우 분석 워크스페이스, 모바일에서는 접이식 샘플과 하단 메뉴로 같은 계산기를 사용합니다.</p>
 </div>
-<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.2</span>
+<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.3</span>
 <button class="pwa-install-btn" hidden="" id="pwaInstallBtn" type="button">앱 설치</button>
 <span class="pwa-status" id="pwaStatus" title="PWA 상태">웹 실행</span>
-<div class="badge">Pokémon Champions · v17.2 · Damage % + Spread</div>
+<div class="badge">Pokémon Champions · v17.3 · Mega Restore</div>
 <span class="pwa-status offline-data-status" id="offlineDataStatus">오프라인 데이터 준비 중</span><span class="pwa-status app-update-status" id="appUpdateStatus">최신 버전 확인 중</span><button class="pwa-install-btn app-update-btn" hidden="True" id="applyAppUpdate" type="button">업데이트 적용</button></div>
 </div>
 <div class="layout">
@@ -3653,7 +3687,11 @@
 </div>
 <button aria-label="빠른 수정 닫기" class="mobile-quick-close" id="mobileQuickClose" type="button">×</button>
 </div>
-<div class="mobile-quick-two">
+<label class="mobile-quick-field mobile-quick-form-field">
+<span>폼 / 메가진화</span>
+<select data-source-select="pokemonForm" id="mobileQuickForm"></select>
+<small id="mobileQuickMegaNote">메가폼 선택 시 메가스톤 자동 장착</small>
+</label><div class="mobile-quick-two">
 <label class="mobile-quick-field">
 <span>성격</span>
 <select data-source-select="nature" id="mobileQuickNature"></select>
@@ -3691,7 +3729,7 @@
 </div>
 <button class="mobile-quick-full-edit" id="mobileQuickFullEdit" type="button">포켓몬 · 폼 등 전체 편집</button>
 </div><div class="mobile-app-update-bar" id="mobileAppUpdateBar">
-<span class="mobile-version-chip" id="mobileVersionStatus">v17.2</span>
+<span class="mobile-version-chip" id="mobileVersionStatus">v17.3</span>
 <span class="mobile-update-text" id="mobileUpdateStatus">최신 버전 확인 중</span>
 <button class="mobile-update-btn" hidden="" id="mobileApplyUpdate" type="button">업데이트</button>
 </div></div><div class="mobile-sample-body"><div class="mobile-sample-tab-title">현재 샘플 편집</div>
@@ -3712,7 +3750,7 @@
 <select id="pokemonForm">
 <option value="base">기본</option>
 </select>
-<div class="mega-note" id="megaNote">메가진화 가능한 포켓몬은 여기에서 전환할 수 있습니다.</div>
+<div class="mega-note" id="megaNote">메가진화 가능 시 메가폼을 선택할 수 있으며, 선택하면 대응 메가스톤이 자동 장착됩니다.</div>
 </div>
 <div class="pokemon-card">
 <div class="pokemon-name" id="pokemonName">-</div>
@@ -3999,7 +4037,6 @@
 <input checked="" id="attackAutoStab" type="checkbox"/>
                     자속 자동 적용
                   </label>
-
 <label class="compact-check">
 <input id="attackCritical" type="checkbox"/>
                     급소 기준
@@ -4462,7 +4499,6 @@
 <div class="offense-result damage-percent-primary">
 <div class="caption">상대 최대 HP 대비 피해</div>
 <div class="big offense-percent-damage" id="offenseDamagePercent">-</div><div class="sub offense-raw-damage" id="offenseDamageRange">-</div>
-
 </div>
 <div class="offense-result">
 <div class="caption">타입 상성</div>
@@ -4560,7 +4596,6 @@
 <input checked="" id="offenseAutoStab" type="checkbox"/>
               자속 자동 적용
             </label>
-
 <div>
 <label for="offenseExtraMultiplier">기타 공격 보정</label>
 <input id="offenseExtraMultiplier" max="4" min="0.1" step="0.05" type="number" value="1"/>
@@ -4620,7 +4655,6 @@
 <div class="source-note">기본 풀: Pokémon Champions 기본 종 + 현재 사용 가능한 메가진화 폼. 지역폼은 별도 단계에서 확장 예정.</div>
 </section>
 </details>
-
 </main>
 </div>
 </div>
@@ -5085,29 +5119,130 @@ function syncMegaFormFromHeldItem(){
   return false;
 }
 
+function megaStoneHeuristicIds(baseName,formId){
+  const base=toID(baseName);
+  const form=toID(formId);
+  const candidates=[];
+
+  if(base==='charizard'){
+    if(form.includes('megax'))candidates.push('charizarditex');
+    if(form.includes('megay'))candidates.push('charizarditey');
+  }else if(base==='mewtwo'){
+    if(form.includes('megax'))candidates.push('mewtwonitex');
+    if(form.includes('megay'))candidates.push('mewtwonitey');
+  }else{
+    const special={
+      venusaur:'venusaurite',
+      blastoise:'blastoisinite',
+      beedrill:'beedrillite',
+      pidgeot:'pidgeotite',
+      alakazam:'alakazite',
+      slowbro:'slowbronite',
+      gengar:'gengarite',
+      kangaskhan:'kangaskhanite',
+      pinsir:'pinsirite',
+      gyarados:'gyaradosite',
+      aerodactyl:'aerodactylite',
+      ampharos:'ampharosite',
+      steelix:'steelixite',
+      scizor:'scizorite',
+      heracross:'heracronite',
+      houndoom:'houndoominite',
+      tyranitar:'tyranitarite',
+      sceptile:'sceptilite',
+      blaziken:'blazikenite',
+      swampert:'swampertite',
+      gardevoir:'gardevoirite',
+      sableye:'sablenite',
+      mawile:'mawilite',
+      aggron:'aggronite',
+      medicham:'medichamite',
+      manectric:'manectite',
+      sharpedo:'sharpedonite',
+      camerupt:'cameruptite',
+      altaria:'altarianite',
+      banette:'banettite',
+      absol:'absolite',
+      glalie:'glalitite',
+      salamence:'salamencite',
+      metagross:'metagrossite',
+      latias:'latiasite',
+      latios:'latiosite',
+      lopunny:'lopunnite',
+      garchomp:'garchompite',
+      lucario:'lucarionite',
+      abomasnow:'abomasite',
+      gallade:'galladite',
+      audino:'audinite',
+      diancie:'diancite'
+    };
+    if(special[base])candidates.push(special[base]);
+    candidates.push(`${base}ite`);
+  }
+  return [...new Set(candidates)];
+}
+
 function findMegaStoneForCurrentForm(){
-  if(!championsItemsReady || pokemonFormSelect.value==='base')return null;
+  if(pokemonFormSelect.value==='base')return null;
+
   const base=currentBasePokemonName();
   const formName=dexData[pokemonFormSelect.value]?.name||pokemonFormSelect.value;
   const target=toID(formName);
 
-  return Object.values(championsItemData).find(item=>{
-    if(!item.megaStone)return false;
-    const mapped=megaTargetForItem(item,base);
-    return mapped && toID(mapped)===target;
-  }) || null;
+  if(championsItemsReady){
+    const mappedStone=Object.values(championsItemData).find(item=>{
+      if(!item.megaStone)return false;
+      const mapped=megaTargetForItem(item,base);
+      return mapped && toID(mapped)===target;
+    });
+    if(mappedStone)return mappedStone;
+  }
+
+  // Fallback for cases where Champions item metadata has not loaded yet.
+  for(const id of megaStoneHeuristicIds(base,pokemonFormSelect.value)){
+    if(championsItemData[id])return championsItemData[id];
+    for(const group of ALL_ITEM_GROUPS){
+      const entry=group.items.find(([itemId])=>itemId===id);
+      if(entry)return {id,name:entry[1],megaStone:formName};
+    }
+  }
+  return null;
 }
 
 function syncHeldItemWithMegaForm(clearSearch=true){
+  const sel=document.getElementById('heldItem');
+  if(!sel)return false;
+
+  // Base form cannot stay automatically paired with a Mega Stone.
+  if(pokemonFormSelect.value==='base'){
+    const current=championsItemData[sel.value];
+    if(current?.megaStone){
+      if(clearSearch){
+        const search=document.getElementById('sampleItemSearch');
+        if(search)search.value='';
+        populateSampleHeldItemSelect('');
+      }
+      sel.value='none';
+      return true;
+    }
+    return false;
+  }
+
   const stone=findMegaStoneForCurrentForm();
   if(!stone)return false;
+
   if(clearSearch){
     const search=document.getElementById('sampleItemSearch');
     if(search)search.value='';
     populateSampleHeldItemSelect('');
   }
-  const sel=document.getElementById('heldItem');
-  if(sel && Array.from(sel.options).some(o=>o.value===stone.id)){
+
+  // Ensure the required stone exists even if the held-item list was filtered.
+  if(!Array.from(sel.options).some(o=>o.value===stone.id)){
+    populateSampleHeldItemSelect('');
+  }
+
+  if(Array.from(sel.options).some(o=>o.value===stone.id)){
     sel.value=stone.id;
     return true;
   }
@@ -8484,6 +8619,7 @@ render();
 
   function syncQuickEditorFromSources() {
     const selectPairs = [
+      ['pokemonForm','mobileQuickForm'],
       ['nature','mobileQuickNature'],
       ['sampleAbility','mobileQuickAbility'],
       ['heldItem','mobileQuickItem'],
@@ -8502,6 +8638,16 @@ render();
     const used = document.getElementById('evUsed')?.textContent?.trim() || '0';
     const remain = document.getElementById('evRemain')?.textContent?.trim() || '66';
     if (quickBudget) quickBudget.textContent = `사용 ${used}/66P · 남음 ${remain}P`;
+
+    const megaNote=document.getElementById('mobileQuickMegaNote');
+    const formSource=document.getElementById('pokemonForm');
+    if(megaNote && formSource){
+      const isMega=formSource.value!=='base';
+      const selected=formSource.selectedOptions?.[0]?.textContent?.trim()||'기본';
+      megaNote.textContent=isMega
+        ? `${selected} · 대응 메가스톤 자동 장착`
+        : (formSource.disabled ? '현재 포켓몬은 메가진화 폼 없음' : '메가폼 선택 시 메가스톤 자동 장착');
+    }
   }
 
   function setQuickEditorOpen(open) {
@@ -8549,7 +8695,7 @@ render();
     });
 
     const sourceSelectIds = [
-      'nature','sampleAbility','heldItem',
+      'pokemonForm','nature','sampleAbility','heldItem',
       'sampleMove1','sampleMove2','sampleMove3','sampleMove4'
     ];
 
@@ -8719,7 +8865,7 @@ render();
   const mobileUpdateStatusEl = document.getElementById('mobileUpdateStatus');
   const mobileUpdateBtn = document.getElementById('mobileApplyUpdate');
 
-  const CURRENT_APP_VERSION = 'v17.2';
+  const CURRENT_APP_VERSION = 'v17.3';
 
   let deferredPrompt = null;
   let registrationRef = null;
