@@ -11,7 +11,7 @@
 <meta content="Champions Stat Lab" name="apple-mobile-web-app-title"/>
 <link href="./manifest.webmanifest" rel="manifest"/>
 <link href="./icons/icon-180.png" rel="apple-touch-icon"/>
-<title>Pokémon Champions Stat Lab v17.3 Mega Restore</title>
+<title>Pokémon Champions Stat Lab v17.4 Install UX + Optimized</title>
 <style>
     :root {
       --bg: #f5f7fb;
@@ -3653,6 +3653,138 @@
     background:#fbfcff;
   }
 }
+
+
+/* ===== v17.4 device-aware install UX ===== */
+.smart-install-bar {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:10px;
+  padding:9px 10px;
+  border:1px solid #d9e3f2;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 6px 18px rgba(15,23,42,.05);
+}
+
+.smart-install-bar[hidden] { display:none !important; }
+
+.smart-install-main {
+  min-width:0;
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.smart-install-main strong {
+  font-size:10px;
+  color:#111827;
+}
+
+.smart-install-main span {
+  font-size:8px;
+  line-height:1.35;
+  color:#667085;
+}
+
+#smartInstallAction {
+  flex:0 0 auto;
+  min-height:30px;
+  padding:6px 10px;
+  border:1px solid #b8caef;
+  border-radius:9px;
+  background:#eef4ff;
+  color:#2458b7;
+  font-size:9px;
+  font-weight:900;
+}
+
+#smartInstallDismiss {
+  flex:0 0 auto;
+  width:28px;
+  height:28px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:#f2f4f7;
+  color:#667085;
+  font-size:16px;
+  line-height:1;
+}
+
+.ios-install-guide {
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:rgba(15,23,42,.45);
+}
+
+.ios-install-guide[hidden] { display:none !important; }
+
+.ios-install-guide-card {
+  width:min(340px,100%);
+  padding:18px;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 20px 60px rgba(15,23,42,.24);
+}
+
+.ios-install-guide-card strong {
+  display:block;
+  margin-bottom:8px;
+  font-size:16px;
+}
+
+.ios-install-guide-card p {
+  margin:0 0 14px;
+  color:#475467;
+  font-size:13px;
+  line-height:1.55;
+}
+
+#iosInstallGuideClose {
+  width:100%;
+  min-height:38px;
+  border:0;
+  border-radius:10px;
+  background:#2458b7;
+  color:#fff;
+  font-weight:900;
+}
+
+@media (max-width:720px) {
+  .smart-install-bar {
+    margin:6px 8px 0;
+    padding:7px 8px;
+    gap:7px;
+    border-radius:10px;
+  }
+
+  .smart-install-main strong {
+    font-size:9px;
+  }
+
+  .smart-install-main span {
+    font-size:7px;
+  }
+
+  #smartInstallAction {
+    min-height:28px;
+    padding:5px 8px;
+    font-size:8px;
+  }
+
+  #smartInstallDismiss {
+    width:24px;
+    height:24px;
+    font-size:14px;
+  }
+}
 </style>
 </head>
 <body>
@@ -3662,10 +3794,10 @@
 <h1>Pokémon Stat Lab</h1>
 <p>PC에서는 좌우 분석 워크스페이스, 모바일에서는 접이식 샘플과 하단 메뉴로 같은 계산기를 사용합니다.</p>
 </div>
-<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.3</span>
+<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.4</span>
 <button class="pwa-install-btn" hidden="" id="pwaInstallBtn" type="button">앱 설치</button>
 <span class="pwa-status" id="pwaStatus" title="PWA 상태">웹 실행</span>
-<div class="badge">Pokémon Champions · v17.3 · Mega Restore</div>
+<div class="badge">Pokémon Champions · v17.4 · Install UX + Optimized</div>
 <span class="pwa-status offline-data-status" id="offlineDataStatus">오프라인 데이터 준비 중</span><span class="pwa-status app-update-status" id="appUpdateStatus">최신 버전 확인 중</span><button class="pwa-install-btn app-update-btn" hidden="True" id="applyAppUpdate" type="button">업데이트 적용</button></div>
 </div>
 <div class="layout">
@@ -3729,7 +3861,7 @@
 </div>
 <button class="mobile-quick-full-edit" id="mobileQuickFullEdit" type="button">포켓몬 · 폼 등 전체 편집</button>
 </div><div class="mobile-app-update-bar" id="mobileAppUpdateBar">
-<span class="mobile-version-chip" id="mobileVersionStatus">v17.3</span>
+<span class="mobile-version-chip" id="mobileVersionStatus">v17.4</span>
 <span class="mobile-update-text" id="mobileUpdateStatus">최신 버전 확인 중</span>
 <button class="mobile-update-btn" hidden="" id="mobileApplyUpdate" type="button">업데이트</button>
 </div></div><div class="mobile-sample-body"><div class="mobile-sample-tab-title">현재 샘플 편집</div>
@@ -8322,8 +8454,6 @@ async function loadDexData(){
   renderPartyAnalysis();
 }
 
-
-
 async function loadMoveKoreanNames(){
   const parseCsvFieldLine = line => {
     // These two PokeAPI CSVs only need the first 2 commas separated reliably.
@@ -8854,18 +8984,28 @@ render();
 })();
 </script><script>
 (() => {
-  const installBtn = document.getElementById('pwaInstallBtn');
-  const statusEl = document.getElementById('pwaStatus');
+  const CURRENT_APP_VERSION = 'v17.4';
+  const INSTALL_DISMISS_KEY = 'pokemonChampionsStatLab.installPromptDismissed.v1';
 
-  const versionEl = document.getElementById('appVersionStatus');
-  const updateStatusEl = document.getElementById('appUpdateStatus');
-  const updateBtn = document.getElementById('applyAppUpdate');
+  const $ = id => document.getElementById(id);
 
-  const mobileVersionEl = document.getElementById('mobileVersionStatus');
-  const mobileUpdateStatusEl = document.getElementById('mobileUpdateStatus');
-  const mobileUpdateBtn = document.getElementById('mobileApplyUpdate');
-
-  const CURRENT_APP_VERSION = 'v17.3';
+  const ui = {
+    installBtn: $('pwaInstallBtn'),
+    pwaStatus: $('pwaStatus'),
+    version: $('appVersionStatus'),
+    updateStatus: $('appUpdateStatus'),
+    updateBtn: $('applyAppUpdate'),
+    mobileVersion: $('mobileVersionStatus'),
+    mobileUpdateStatus: $('mobileUpdateStatus'),
+    mobileUpdateBtn: $('mobileApplyUpdate'),
+    smartInstallBar: $('smartInstallBar'),
+    smartInstallTitle: $('smartInstallTitle'),
+    smartInstallHint: $('smartInstallHint'),
+    smartInstallAction: $('smartInstallAction'),
+    smartInstallDismiss: $('smartInstallDismiss'),
+    iosGuide: $('iosInstallGuide'),
+    iosGuideClose: $('iosInstallGuideClose')
+  };
 
   let deferredPrompt = null;
   let registrationRef = null;
@@ -8874,29 +9014,119 @@ render();
   let refreshing = false;
   let applyingUpdate = false;
 
-  if (versionEl) versionEl.textContent = CURRENT_APP_VERSION;
-  if (mobileVersionEl) mobileVersionEl.textContent = CURRENT_APP_VERSION;
+  const env = (() => {
+    const ua = navigator.userAgent || '';
+    const isIOS = /iphone|ipad|ipod/i.test(ua);
+    const isAndroid = /android/i.test(ua);
+    const isEdge = /edg\//i.test(ua);
+    const isChrome = /chrome|crios/i.test(ua) && !isEdge;
+    const isDesktop = !isIOS && !isAndroid;
+    const isStandalone =
+      window.matchMedia?.('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true;
+    return {isIOS,isAndroid,isEdge,isChrome,isDesktop,isStandalone};
+  })();
 
-  function setPwaStatus(text, mode='') {
-    if (!statusEl) return;
-    statusEl.textContent = text;
-    statusEl.classList.toggle('ready', mode === 'ready');
+  function setText(el, text) {
+    if (el) el.textContent = text;
+  }
+
+  function setPwaStatus(text, ready=false) {
+    setText(ui.pwaStatus, text);
+    ui.pwaStatus?.classList.toggle('ready', !!ready);
   }
 
   function setUpdateStatus(text, ready=false) {
-    if (updateStatusEl) {
-      updateStatusEl.textContent = text;
-      updateStatusEl.classList.toggle('update-ready', !!ready);
-    }
-    if (updateBtn) {
-      updateBtn.hidden = !ready;
-      if (!ready) updateBtn.disabled = false;
+    [ui.updateStatus, ui.mobileUpdateStatus].forEach(el => {
+      if (!el) return;
+      el.textContent = text;
+      el.classList.toggle('update-ready', !!ready);
+    });
+
+    [ui.updateBtn, ui.mobileUpdateBtn].forEach(btn => {
+      if (!btn) return;
+      btn.hidden = !ready;
+      if (!ready) btn.disabled = false;
+    });
+  }
+
+  function installPromptDismissed() {
+    return localStorage.getItem(INSTALL_DISMISS_KEY) === '1';
+  }
+
+  function hideSmartInstall(persist=false) {
+    if (ui.smartInstallBar) ui.smartInstallBar.hidden = true;
+    if (persist) localStorage.setItem(INSTALL_DISMISS_KEY, '1');
+  }
+
+  function showSmartInstall(title, hint, actionLabel) {
+    if (!ui.smartInstallBar || env.isStandalone || installPromptDismissed()) return;
+    setText(ui.smartInstallTitle, title);
+    setText(ui.smartInstallHint, hint);
+    setText(ui.smartInstallAction, actionLabel);
+    ui.smartInstallBar.hidden = false;
+  }
+
+  function refreshInstallUi() {
+    if (env.isStandalone) {
+      hideSmartInstall(false);
+      setPwaStatus('앱 실행 중', true);
+      return;
     }
 
-    if (mobileUpdateStatusEl) mobileUpdateStatusEl.textContent = text;
-    if (mobileUpdateBtn) {
-      mobileUpdateBtn.hidden = !ready;
-      if (!ready) mobileUpdateBtn.disabled = false;
+    if (env.isIOS) {
+      showSmartInstall(
+        '홈 화면에 추가',
+        'Safari에서 홈 화면 바로가기로 설치할 수 있습니다.',
+        '추가 방법 보기'
+      );
+      setPwaStatus('Safari 공유 → 홈 화면에 추가', true);
+      return;
+    }
+
+    if (deferredPrompt) {
+      showSmartInstall(
+        env.isAndroid ? '홈 화면에 설치' : '앱으로 설치',
+        env.isAndroid
+          ? '설치 후 홈 화면과 앱 목록에서 바로 실행할 수 있습니다.'
+          : '설치 후 Windows 앱처럼 별도 창으로 실행할 수 있습니다.',
+        env.isAndroid ? '홈 화면에 설치' : '앱으로 설치'
+      );
+      setPwaStatus('설치 가능', true);
+      return;
+    }
+
+    if (env.isDesktop) {
+      showSmartInstall(
+        '앱 설치',
+        'Chrome/Edge의 설치 기능이 준비되면 여기서 바로 설치할 수 있습니다.',
+        '설치 확인'
+      );
+    } else if (env.isAndroid) {
+      showSmartInstall(
+        '홈 화면에 설치',
+        '브라우저 설치 기능이 준비되면 여기서 설치할 수 있습니다.',
+        '설치 확인'
+      );
+    }
+
+    setPwaStatus('웹 실행');
+  }
+
+  async function fetchServerVersion() {
+    if (!/^https?:$/.test(location.protocol)) return null;
+    try {
+      const url = new URL('./app-version.json', location.href);
+      url.searchParams.set('_', Date.now().toString());
+      const response = await fetch(url.href, {
+        cache:'no-store',
+        headers:{'Cache-Control':'no-cache'}
+      });
+      if (!response.ok) throw new Error('version fetch failed');
+      const data = await response.json();
+      return String(data?.version || '').trim() || null;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -8904,84 +9134,21 @@ render();
     return !!serverVersion && serverVersion !== CURRENT_APP_VERSION;
   }
 
-  async function fetchServerVersion() {
-    if (!/^https?:$/.test(location.protocol)) return null;
-
-    try {
-      const url = new URL('./app-version.json', location.href);
-      url.searchParams.set('_', Date.now().toString());
-
-      const response = await fetch(url.href, {
-        cache: 'no-store',
-        headers: {'Cache-Control':'no-cache'}
-      });
-
-      if (!response.ok) throw new Error('version fetch failed');
-
-      const data = await response.json();
-      const version = String(data?.version || '').trim();
-      return version || null;
-    } catch (_) {
-      return null;
-    }
-  }
-
   async function refreshServerVersionStatus() {
     const latest = await fetchServerVersion();
-
     if (!latest) {
-      // Do not claim "latest" when the server version could not be checked.
       setUpdateStatus('최신 버전 확인 실패', false);
       return;
     }
-
     serverVersion = latest;
-
-    if (versionsDiffer()) {
-      setUpdateStatus(`새 버전 ${serverVersion} 있음`, true);
-    } else {
-      setUpdateStatus(`최신 ${CURRENT_APP_VERSION} 사용 중`, false);
-    }
+    setUpdateStatus(
+      versionsDiffer() ? `새 버전 ${serverVersion} 있음` : `최신 ${CURRENT_APP_VERSION} 사용 중`,
+      versionsDiffer()
+    );
   }
-
-  const isStandalone =
-    window.matchMedia?.('(display-mode: standalone)').matches ||
-    window.navigator.standalone === true;
-
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-
-  if (location.protocol === 'file:') {
-    setPwaStatus('웹 배포 후 설치 가능');
-  } else if (isStandalone) {
-    setPwaStatus('앱 실행 중', 'ready');
-  } else if (isIOS) {
-    setPwaStatus('Safari 공유 → 홈 화면에 추가', 'ready');
-  } else {
-    setPwaStatus('웹 실행');
-  }
-
-  window.addEventListener('beforeinstallprompt', event => {
-    event.preventDefault();
-    deferredPrompt = event;
-    if (installBtn) installBtn.hidden = false;
-  });
-
-  installBtn?.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    try { await deferredPrompt.userChoice; } catch (_) {}
-    deferredPrompt = null;
-    installBtn.hidden = true;
-  });
-
-  window.addEventListener('appinstalled', () => {
-    if (installBtn) installBtn.hidden = true;
-    setPwaStatus('앱 설치됨', 'ready');
-  });
 
   function watchRegistration(registration) {
     registrationRef = registration;
-
     if (registration.waiting && navigator.serviceWorker.controller) {
       waitingWorker = registration.waiting;
     }
@@ -8989,7 +9156,6 @@ render();
     registration.addEventListener('updatefound', () => {
       const installing = registration.installing;
       if (!installing) return;
-
       installing.addEventListener('statechange', async () => {
         if (installing.state === 'installed' && navigator.serviceWorker.controller) {
           waitingWorker = registration.waiting || installing;
@@ -9002,9 +9168,8 @@ render();
   async function waitForWaitingWorker(timeoutMs=6000) {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
-      const reg = registrationRef;
-      if (reg?.waiting) {
-        waitingWorker = reg.waiting;
+      if (registrationRef?.waiting) {
+        waitingWorker = registrationRef.waiting;
         return waitingWorker;
       }
       await new Promise(resolve => setTimeout(resolve, 180));
@@ -9012,11 +9177,9 @@ render();
     return null;
   }
 
-  async function forceFreshNavigation() {
-    // Cache-busting query defeats a stale document cache. The service worker
-    // will network-fetch this navigation and GitHub Pages serves latest index.
+  function forceFreshNavigation(param='app-update') {
     const url = new URL(location.href);
-    url.searchParams.set('app-update', Date.now().toString());
+    url.searchParams.set(param, Date.now().toString());
     location.replace(url.href);
   }
 
@@ -9024,70 +9187,104 @@ render();
     if (applyingUpdate) return;
     applyingUpdate = true;
 
-    if (updateBtn) updateBtn.disabled = true;
-    if (mobileUpdateBtn) mobileUpdateBtn.disabled = true;
+    [ui.updateBtn, ui.mobileUpdateBtn].forEach(btn => {
+      if (btn) btn.disabled = true;
+    });
     setUpdateStatus('업데이트 적용 중', false);
 
     try {
-      if (registrationRef) {
-        await registrationRef.update();
-      }
-
+      await registrationRef?.update();
       const worker = waitingWorker || await waitForWaitingWorker();
-
       if (worker) {
         waitingWorker = worker;
         worker.postMessage({type:'SKIP_WAITING'});
         return;
       }
-
-      // A newer app-version.json exists but the browser did not produce a
-      // waiting worker. Force a network navigation instead of lying that the
-      // current cached page is latest.
       if (versionsDiffer()) {
-        await forceFreshNavigation();
+        forceFreshNavigation();
         return;
       }
-
       await refreshServerVersionStatus();
     } catch (_) {
-      if (versionsDiffer()) {
-        await forceFreshNavigation();
-      } else {
-        setUpdateStatus('업데이트 적용 실패', true);
-      }
+      if (versionsDiffer()) forceFreshNavigation();
+      else setUpdateStatus('업데이트 적용 실패', true);
     } finally {
       applyingUpdate = false;
     }
   }
 
-  updateBtn?.addEventListener('click', applyWaitingUpdate);
-  mobileUpdateBtn?.addEventListener('click', applyWaitingUpdate);
+  async function triggerInstall() {
+    if (env.isStandalone) return;
+
+    if (env.isIOS) {
+      if (ui.iosGuide) ui.iosGuide.hidden = false;
+      return;
+    }
+
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      try { await deferredPrompt.userChoice; } catch (_) {}
+      deferredPrompt = null;
+      refreshInstallUi();
+      return;
+    }
+
+    // Browser has not exposed beforeinstallprompt yet.
+    setText(
+      ui.smartInstallHint,
+      env.isDesktop
+        ? '주소창의 설치 아이콘 또는 브라우저 메뉴의 앱 설치를 사용할 수 있습니다.'
+        : '브라우저 메뉴의 앱 설치/홈 화면에 추가를 사용할 수 있습니다.'
+    );
+  }
+
+  setText(ui.version, CURRENT_APP_VERSION);
+  setText(ui.mobileVersion, CURRENT_APP_VERSION);
+
+  window.addEventListener('beforeinstallprompt', event => {
+    event.preventDefault();
+    deferredPrompt = event;
+    if (ui.installBtn) ui.installBtn.hidden = false;
+    refreshInstallUi();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    if (ui.installBtn) ui.installBtn.hidden = true;
+    hideSmartInstall(false);
+    setPwaStatus('앱 설치됨', true);
+  });
+
+  ui.installBtn?.addEventListener('click', triggerInstall);
+  ui.smartInstallAction?.addEventListener('click', triggerInstall);
+  ui.smartInstallDismiss?.addEventListener('click', () => hideSmartInstall(true));
+  ui.iosGuideClose?.addEventListener('click', () => {
+    if (ui.iosGuide) ui.iosGuide.hidden = true;
+  });
+  ui.iosGuide?.addEventListener('click', event => {
+    if (event.target === ui.iosGuide) ui.iosGuide.hidden = true;
+  });
+
+  ui.updateBtn?.addEventListener('click', applyWaitingUpdate);
+  ui.mobileUpdateBtn?.addEventListener('click', applyWaitingUpdate);
 
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (refreshing) return;
       refreshing = true;
-
-      // After the new SW takes control, force a no-cache document request.
-      const url = new URL(location.href);
-      url.searchParams.set('updated', Date.now().toString());
-      location.replace(url.href);
+      forceFreshNavigation('updated');
     });
 
     navigator.serviceWorker.register('./sw.js', {
-      scope: './',
-      updateViaCache: 'none'
+      scope:'./',
+      updateViaCache:'none'
     })
       .then(async registration => {
         watchRegistration(registration);
         try { await registration.update(); } catch (_) {}
         await refreshServerVersionStatus();
       })
-      .catch(async () => {
-        // Version file still tells us whether the current page is stale.
-        await refreshServerVersionStatus();
-      });
+      .catch(refreshServerVersionStatus);
 
     window.setInterval(async () => {
       try { await registrationRef?.update(); } catch (_) {}
@@ -9096,13 +9293,13 @@ render();
 
     window.addEventListener('focus', refreshServerVersionStatus);
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        refreshServerVersionStatus();
-      }
+      if (document.visibilityState === 'visible') refreshServerVersionStatus();
     });
   } else {
     setUpdateStatus('웹 배포 시 업데이트 지원', false);
   }
+
+  refreshInstallUi();
 })();
 </script>
 <script>
@@ -9307,5 +9504,21 @@ render();
     bindMoveSearch(`mobileQuickMoveSearch${i}`,`mobileQuickMove${i}`);
   }
 })();
-</script></body>
+</script>
+<div class="smart-install-bar" hidden="" id="smartInstallBar">
+<div class="smart-install-main">
+<strong id="smartInstallTitle">앱으로 설치</strong>
+<span id="smartInstallHint">현재 기기에 맞는 설치 방식을 안내합니다.</span>
+</div>
+<button id="smartInstallAction" type="button">앱으로 설치</button>
+<button aria-label="설치 안내 닫기" id="smartInstallDismiss" type="button">×</button>
+</div>
+<div class="ios-install-guide" hidden="" id="iosInstallGuide">
+<div class="ios-install-guide-card">
+<strong>홈 화면에 추가</strong>
+<p>Safari의 공유 버튼을 누른 뒤 <b>홈 화면에 추가</b>를 선택하세요.</p>
+<button id="iosInstallGuideClose" type="button">확인</button>
+</div>
+</div>
+</body>
 </html>
