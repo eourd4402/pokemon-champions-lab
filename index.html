@@ -11,7 +11,7 @@
 <meta content="Champions Stat Lab" name="apple-mobile-web-app-title"/>
 <link href="./manifest.webmanifest" rel="manifest"/>
 <link href="./icons/icon-180.png" rel="apple-touch-icon"/>
-<title>Pokémon Champions Stat Lab v16.7 Analysis Order Fix</title>
+<title>Pokémon Champions Stat Lab v16.8 Offline Core Data</title>
 <style>
     :root {
       --bg: #f5f7fb;
@@ -3350,6 +3350,21 @@
         z-index:auto !important;
       }
     }
+
+
+    /* ===== v16.8 offline core-data status ===== */
+    .offline-data-status.ready {
+      font-weight:900;
+    }
+
+    @media (max-width:720px) {
+      .offline-data-status {
+        max-width:132px;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+      }
+    }
 </style>
 </head>
 <body>
@@ -3362,8 +3377,8 @@
 <div class="pwa-top-actions">
 <button class="pwa-install-btn" hidden="" id="pwaInstallBtn" type="button">앱 설치</button>
 <span class="pwa-status" id="pwaStatus" title="PWA 상태">웹 실행</span>
-<div class="badge">Pokémon Champions · v16.7 · Analysis Order Fix</div>
-</div>
+<div class="badge">Pokémon Champions · v16.8 · Offline Data</div>
+<span class="pwa-status offline-data-status" id="offlineDataStatus">오프라인 데이터 준비 중</span></div>
 </div>
 <div class="layout">
 <aside class="panel sidebar" id="currentSamplePanel"><div class="mobile-persistent-sample" id="mobilePersistentSample">
@@ -3638,8 +3653,6 @@
 </div>
 <div class="durability-formula">내구지수 = HP 실능치 × 방어/특방 실능치</div>
 </div><div aria-label="내구 분석 보기 방식" class="purpose-switch durability-purpose-switch" id="durabilityModeSwitch" role="tablist">
-
-
 <button aria-selected="true" class="purpose-tab active" data-durability-mode="own" role="tab" type="button">
 <strong>내 포켓몬 내구</strong>
 <span>물리/특수 내구지수 · HP 배수</span>
@@ -4052,7 +4065,6 @@
 <div>현재 투자<b id="offenseOwnPoints">-</b></div>
 </div>
 </div>
-
 </div><div class="purpose-choice-label" id="offenseTargetChoiceLabel">
 <div>
 <strong>상대 내구 분석 선택</strong>
@@ -8603,6 +8615,47 @@ render();
 
   setDurabilityView(dur,false);
   setOffenseView(off,false);
+})();
+</script><script>
+(() => {
+  const statusEl=document.getElementById('offlineDataStatus');
+  if(!statusEl)return;
+
+  function setOfflineDataStatus(text,ready=false){
+    statusEl.textContent=text;
+    statusEl.classList.toggle('ready',!!ready);
+  }
+
+  if(!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)){
+    setOfflineDataStatus('웹 배포 시 오프라인 지원');
+    return;
+  }
+
+  navigator.serviceWorker.addEventListener('message',event=>{
+    const data=event.data||{};
+    if(data.type==='CORE_DATA_PROGRESS'){
+      const total=Number(data.total)||0;
+      const done=Number(data.done)||0;
+      if(total>0)setOfflineDataStatus(`오프라인 데이터 ${done}/${total}`);
+    }
+    if(data.type==='CORE_DATA_READY'){
+      setOfflineDataStatus('오프라인 데이터 준비됨',true);
+    }
+  });
+
+  async function requestCoreDataCache(){
+    try{
+      const reg=await navigator.serviceWorker.ready;
+      const sw=navigator.serviceWorker.controller || reg.active;
+      if(sw){
+        sw.postMessage({type:'PRECACHE_CORE_DATA'});
+      }
+    }catch(_){}
+  }
+
+  window.addEventListener('load',()=>{
+    window.setTimeout(requestCoreDataCache,600);
+  });
 })();
 </script></body>
 </html>

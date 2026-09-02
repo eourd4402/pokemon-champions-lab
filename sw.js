@@ -1,6 +1,11 @@
-const APP_VERSION = 'pcl-v16-7-analysis-order-fix-20260902-1';
+const APP_VERSION = 'pcl-v16-8-offline-core-data-20260902-1';
 const SHELL_CACHE = `${APP_VERSION}-shell`;
 const RUNTIME_CACHE = `${APP_VERSION}-runtime`;
+
+// Core data is deliberately NOT versioned with the app.
+// This preserves Pokémon/move/item data across code updates.
+const CORE_DATA_CACHE = 'pcl-core-data-v1';
+
 const SHELL_FILES = [
   './',
   './index.html',
@@ -10,6 +15,28 @@ const SHELL_FILES = [
   './icons/icon-512.png'
 ];
 
+const CORE_DATA_URLS = [
+  'https://play.pokemonshowdown.com/data/pokedex.json',
+  'https://play.pokemonshowdown.com/data/moves.json',
+  'https://play.pokemonshowdown.com/data/items.json',
+
+  'https://raw.githubusercontent.com/smogon/pokemon-showdown/master/data/mods/champions/items.ts',
+  'https://raw.githubusercontent.com/smogon/pokemon-showdown/master/data/mods/champions/moves.ts',
+
+  'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv',
+
+  'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/moves.csv',
+  'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv',
+
+  'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/items.csv',
+  'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv',
+
+  'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/abilities.csv',
+  'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/ability_names.csv'
+];
+
+const CORE_DATA_SET = new Set(CORE_DATA_URLS);
+
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(SHELL_CACHE)
@@ -18,16 +45,73 @@ self.addEventListener('install', event => {
   );
 });
 
+async function notifyClients(message){
+  const clients=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+  clients.forEach(client=>client.postMessage(message));
+}
+
+async function cacheOneCoreData(url, cache){
+  try{
+    const response=await fetch(url,{cache:'no-store'});
+    if(response && (response.ok || response.type==='opaque')){
+      await cache.put(url,response.clone());
+      return true;
+    }
+  }catch(_){}
+  return false;
+}
+
+async function precacheCoreData(){
+  const cache=await caches.open(CORE_DATA_CACHE);
+  let done=0;
+  const total=CORE_DATA_URLS.length;
+
+  for(const url of CORE_DATA_URLS){
+    const existing=await cache.match(url);
+    if(!existing){
+      await cacheOneCoreData(url,cache);
+    }
+    done++;
+    await notifyClients({type:'CORE_DATA_PROGRESS',done,total});
+  }
+
+  const cached=await Promise.all(CORE_DATA_URLS.map(url=>cache.match(url)));
+  const readyCount=cached.filter(Boolean).length;
+  await notifyClients({
+    type:'CORE_DATA_READY',
+    done:readyCount,
+    total,
+    complete:readyCount===total
+  });
+}
+
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(
+    (async()=>{
+      const keys=await caches.keys();
+      await Promise.all(
         keys
-          .filter(key => key !== SHELL_CACHE && key !== RUNTIME_CACHE)
-          .map(key => caches.delete(key))
-      ))
-      .then(() => self.clients.claim())
+          .filter(key =>
+            key !== SHELL_CACHE &&
+            key !== RUNTIME_CACHE &&
+            key !== CORE_DATA_CACHE
+          )
+          .map(key=>caches.delete(key))
+      );
+
+      await self.clients.claim();
+
+      // Best-effort background download. Individual failures never block app use.
+      await precacheCoreData();
+    })()
   );
+});
+
+self.addEventListener('message', event => {
+  const data=event.data||{};
+  if(data.type==='PRECACHE_CORE_DATA'){
+    event.waitUntil(precacheCoreData());
+  }
 });
 
 async function networkFirst(request, fallback) {
@@ -43,7 +127,23 @@ async function networkFirst(request, fallback) {
   }
 }
 
-async function staleWhileRevalidate(request) {
+async function coreDataStaleWhileRevalidate(request) {
+  const cache = await caches.open(CORE_DATA_CACHE);
+  const cached = await cache.match(request);
+
+  const networkPromise = fetch(request, {cache:'no-store'})
+    .then(response => {
+      if (response && (response.ok || response.type === 'opaque')) {
+        cache.put(request, response.clone()).catch(() => {});
+      }
+      return response;
+    })
+    .catch(() => cached);
+
+  return cached || networkPromise;
+}
+
+async function runtimeStaleWhileRevalidate(request) {
   const cache = await caches.open(RUNTIME_CACHE);
   const cached = await cache.match(request);
 
@@ -65,19 +165,23 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(request.url);
 
-  // 설치형 앱을 열 때는 항상 서버의 최신 index.html을 우선 사용한다.
   if (request.mode === 'navigate') {
     event.respondWith(networkFirst(request, './index.html'));
     return;
   }
 
-  // 같은 사이트의 앱 파일도 최신본 우선, 네트워크 실패 시 캐시 fallback.
   if (url.origin === self.location.origin) {
     event.respondWith(networkFirst(request));
     return;
   }
 
-  // Showdown / PokeAPI 등 외부 데이터는 캐시를 우선 보여주면서 최신본을 갱신한다.
-  // 한 번 온라인에서 불러온 데이터는 이후 일시적인 오프라인에서도 재사용 가능하다.
-  event.respondWith(staleWhileRevalidate(request));
+  // Pokémon / move / item / Korean-name data:
+  // use persistent local cache first, while refreshing online when possible.
+  if (CORE_DATA_SET.has(url.href)) {
+    event.respondWith(coreDataStaleWhileRevalidate(request));
+    return;
+  }
+
+  // Other occasional external requests keep the versioned runtime cache.
+  event.respondWith(runtimeStaleWhileRevalidate(request));
 });
