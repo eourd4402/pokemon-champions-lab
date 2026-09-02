@@ -11,7 +11,7 @@
 <meta content="Champions Stat Lab" name="apple-mobile-web-app-title"/>
 <link href="./manifest.webmanifest" rel="manifest"/>
 <link href="./icons/icon-180.png" rel="apple-touch-icon"/>
-<title>Pokémon Champions Stat Lab v17.7 Mobile Layout + Chrome Handoff</title>
+<title>Pokémon Champions Stat Lab v17.8 Install Bar Always Visible</title>
 <style>
     :root {
       --bg: #f5f7fb;
@@ -3955,6 +3955,35 @@
     display:flex !important;
   }
 }
+
+
+/* ===== v17.8 persistent install CTA on mobile ===== */
+@media (max-width:720px) {
+  #smartInstallBar.smart-install-bar {
+    display:flex;
+    margin:0 0 16px !important;
+    padding:10px 10px;
+    border-width:1px;
+    border-color:#b8caef;
+    background:#f7faff;
+  }
+
+  #smartInstallBar.smart-install-bar[hidden] {
+    display:none !important;
+  }
+
+  #smartInstallAction {
+    min-height:34px;
+    padding:7px 10px;
+    font-size:9px;
+  }
+
+  /* On mobile we intentionally do not offer a dismiss button anymore.
+     The install area disappears only once the app is actually running standalone. */
+  #smartInstallDismiss {
+    display:none !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -3964,10 +3993,10 @@
 <h1>Pokémon Stat Lab</h1>
 <p>PC에서는 좌우 분석 워크스페이스, 모바일에서는 접이식 샘플과 하단 메뉴로 같은 계산기를 사용합니다.</p>
 </div>
-<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.7</span>
+<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.8</span>
 <button class="pwa-install-btn" hidden="" id="pwaInstallBtn" type="button">앱 설치</button>
 <span class="pwa-status" id="pwaStatus" title="PWA 상태">웹 실행</span>
-<div class="badge">Pokémon Champions · v17.7 · Mobile Layout + Chrome Handoff</div>
+<div class="badge">Pokémon Champions · v17.8 · Install Bar Always Visible</div>
 <span class="pwa-status offline-data-status" id="offlineDataStatus">오프라인 데이터 준비 중</span><span class="pwa-status app-update-status" id="appUpdateStatus">최신 버전 확인 중</span><button class="pwa-install-btn app-update-btn" hidden="True" id="applyAppUpdate" type="button">업데이트 적용</button></div>
 </div><div class="smart-install-bar" hidden="" id="smartInstallBar">
 <div class="smart-install-main">
@@ -4038,7 +4067,7 @@
 </div>
 <button class="mobile-quick-full-edit" id="mobileQuickFullEdit" type="button">포켓몬 · 폼 등 전체 편집</button>
 </div><div class="mobile-app-update-bar" id="mobileAppUpdateBar">
-<span class="mobile-version-chip" id="mobileVersionStatus">v17.7</span>
+<span class="mobile-version-chip" id="mobileVersionStatus">v17.8</span>
 <span class="mobile-update-text" id="mobileUpdateStatus">최신 버전 확인 중</span>
 <button class="mobile-update-btn" hidden="" id="mobileApplyUpdate" type="button">업데이트</button>
 </div></div><div aria-hidden="true" class="mobile-persistent-placeholder" id="mobilePersistentPlaceholder"></div><div class="mobile-sample-body"><div class="mobile-sample-tab-title">현재 샘플 편집</div>
@@ -9213,7 +9242,7 @@ render();
 })();
 </script><script>
 (() => {
-  const CURRENT_APP_VERSION = 'v17.7';
+  const CURRENT_APP_VERSION = 'v17.8';
   const INSTALL_DISMISS_KEY = 'pokemonChampionsStatLab.installPromptDismissed.v1';
   const $ = id => document.getElementById(id);
 
@@ -9282,12 +9311,16 @@ render();
   }
 
   function installPromptDismissed() {
+    // Mobile install CTA must remain visible until the PWA is actually installed.
+    if (env.isAndroid || env.isIOS) return false;
     return localStorage.getItem(INSTALL_DISMISS_KEY) === '1';
   }
 
   function hideSmartInstall(persist=false) {
     if (ui.smartInstallBar) ui.smartInstallBar.hidden = true;
-    if (persist) localStorage.setItem(INSTALL_DISMISS_KEY, '1');
+    if (persist && !(env.isAndroid || env.isIOS)) {
+      localStorage.setItem(INSTALL_DISMISS_KEY, '1');
+    }
   }
 
   function showSmartInstall(title, hint, actionLabel) {
@@ -9409,8 +9442,8 @@ render();
 
     if (env.isKakao) {
       showSmartInstall(
-        '앱으로 설치',
-        '카카오톡 내부 브라우저에서는 직접 설치할 수 없어 Chrome으로 전환해야 합니다.',
+        '앱 설치',
+        '카카오톡 내부 브라우저에서는 설치창을 직접 띄울 수 없어 Chrome으로 전환합니다.',
         'Chrome에서 열기'
       );
       setPwaStatus('Chrome에서 설치');
@@ -9551,6 +9584,10 @@ render();
     showInstallGuide();
   }
 
+  if (env.isAndroid || env.isIOS) {
+    localStorage.removeItem(INSTALL_DISMISS_KEY);
+  }
+
   setText(ui.version, CURRENT_APP_VERSION);
   setText(ui.mobileVersion, CURRENT_APP_VERSION);
 
@@ -9570,7 +9607,10 @@ render();
 
   ui.installBtn?.addEventListener('click', triggerInstall);
   ui.smartInstallAction?.addEventListener('click', triggerInstall);
-  ui.smartInstallDismiss?.addEventListener('click', () => hideSmartInstall(true));
+  ui.smartInstallDismiss?.addEventListener('click', () => {
+    if (env.isAndroid || env.isIOS) return;
+    hideSmartInstall(true);
+  });
   ui.installGuideClose?.addEventListener('click', () => {
     if (ui.installGuideModal) ui.installGuideModal.hidden = true;
   });

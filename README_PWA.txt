@@ -243,3 +243,15 @@ Android 설치
 - 'Chrome에서 열기'는 Android intent로 현재 GitHub Pages 주소를 Chrome에 전달
 - 인앱 브라우저가 intent를 차단하면 설치 안내 팝업을 자동 표시
 - 보안상 실제 PWA 설치의 최종 '설치' 확인은 Android/Chrome이 요구하며 웹이 생략할 수 없음
+
+
+v17.8 모바일 설치 영역 항상 표시
+- 기존 문제:
+  모바일에서 설치 안내를 한 번 닫으면 localStorage에 숨김 상태가 남아
+  새 버전에서도 설치 버튼이 보이지 않을 수 있었음
+- Android/iPhone에서는 기존 숨김 상태를 무시하고 페이지 로드시 제거
+- 모바일에서는 설치 영역의 X 닫기 버튼을 숨김
+- 앱이 실제 standalone/PWA로 실행 중일 때만 설치 영역을 숨김
+- 카카오톡 인앱 브라우저: 제목 아래에 'Chrome에서 열기' 버튼 상시 표시
+- Android Chrome에서 beforeinstallprompt가 제공되면 '지금 설치'로 실제 설치창 실행
+- 기존 모바일 샘플/버전 위치와 계산 기능 유지

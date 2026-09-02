@@ -1,4 +1,4 @@
-const APP_VERSION = 'pcl-v17-7-mobile-layout-chrome-handoff-20260902-1';
+const APP_VERSION = 'pcl-v17-8-install-bar-always-visible-20260902-1';
 const SHELL_CACHE = `${APP_VERSION}-shell`;
 const RUNTIME_CACHE = `${APP_VERSION}-runtime`;
 
