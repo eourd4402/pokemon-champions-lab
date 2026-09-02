@@ -1,4 +1,4 @@
-const APP_VERSION = 'pcl-v17-1-authoritative-update-check-20260902-1';
+const APP_VERSION = 'pcl-v17-2-damage-spread-20260902-1';
 const SHELL_CACHE = `${APP_VERSION}-shell`;
 const RUNTIME_CACHE = `${APP_VERSION}-runtime`;
 
