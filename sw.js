@@ -1,4 +1,4 @@
-const APP_VERSION = 'pcl-v16-9-update-control-20260902-1';
+const APP_VERSION = 'pcl-v17-move-search-mobile-update-20260902-1';
 const SHELL_CACHE = `${APP_VERSION}-shell`;
 const RUNTIME_CACHE = `${APP_VERSION}-runtime`;
 

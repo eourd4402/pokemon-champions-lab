@@ -11,7 +11,7 @@
 <meta content="Champions Stat Lab" name="apple-mobile-web-app-title"/>
 <link href="./manifest.webmanifest" rel="manifest"/>
 <link href="./icons/icon-180.png" rel="apple-touch-icon"/>
-<title>Pokémon Champions Stat Lab v16.9 Update Control</title>
+<title>Pokémon Champions Stat Lab v17 Move Search + Mobile Update</title>
 <style>
     :root {
       --bg: #f5f7fb;
@@ -3415,6 +3415,111 @@
         font-size:9px;
       }
     }
+
+
+    /* ===== v17 sample move search ===== */
+    .sample-move-search {
+      width:100%;
+      min-height:32px;
+      margin:0 0 4px;
+      padding:6px 8px;
+      border:1px solid #d9e0e8;
+      border-radius:8px;
+      background:#fff;
+      color:var(--text);
+      font:inherit;
+      font-size:10px;
+      outline:none;
+    }
+
+    .sample-move-search:focus {
+      border-color:#9eb6ea;
+      box-shadow:0 0 0 2px rgba(36,88,183,.08);
+    }
+
+    .mobile-app-update-bar {
+      display:none;
+    }
+
+    @media (max-width:720px) {
+      .sample-move-search {
+        min-height:38px !important;
+        padding:7px 8px !important;
+        border-radius:8px !important;
+        font-size:14px !important;
+      }
+
+      /* quick editor: 1 / search / select per move row */
+      .mobile-quick-moves label {
+        grid-template-columns:18px minmax(0,.72fr) minmax(0,1.28fr) !important;
+      }
+
+      .mobile-quick-move-search {
+        width:100%;
+        min-width:0;
+        height:38px;
+        min-height:38px !important;
+        padding:5px 6px !important;
+        border:1px solid #d9e0e8;
+        border-radius:8px !important;
+        background:#fff;
+        color:var(--text);
+        font-size:11px !important;
+      }
+
+      /* fixed top sample gets its own visible update/version line */
+      .mobile-app-update-bar {
+        grid-column:1 / -1;
+        display:flex;
+        align-items:center;
+        gap:5px;
+        min-width:0;
+        margin-top:2px;
+        padding-top:5px;
+        border-top:1px solid #edf0f4;
+      }
+
+      .mobile-version-chip {
+        flex:0 0 auto;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height:21px;
+        padding:3px 6px;
+        border-radius:999px;
+        background:#eef4ff;
+        color:#2458b7;
+        font-size:7.5px;
+        font-weight:900;
+      }
+
+      .mobile-update-text {
+        min-width:0;
+        flex:1 1 auto;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+        color:#667085;
+        font-size:7.3px;
+        font-weight:800;
+      }
+
+      .mobile-update-btn {
+        flex:0 0 auto;
+        min-height:26px;
+        padding:4px 7px;
+        border:1px solid #b9c9ee;
+        border-radius:8px;
+        background:#eef4ff;
+        color:#2458b7;
+        font-size:7.5px;
+        font-weight:900;
+      }
+
+      .mobile-update-btn[hidden] {
+        display:none !important;
+      }
+    }
 </style>
 </head>
 <body>
@@ -3427,7 +3532,7 @@
 <div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v16.9</span>
 <button class="pwa-install-btn" hidden="" id="pwaInstallBtn" type="button">앱 설치</button>
 <span class="pwa-status" id="pwaStatus" title="PWA 상태">웹 실행</span>
-<div class="badge">Pokémon Champions · v16.9 · Update Control</div>
+<div class="badge">Pokémon Champions · v17 · Move Search + Mobile Update</div>
 <span class="pwa-status offline-data-status" id="offlineDataStatus">오프라인 데이터 준비 중</span><span class="pwa-status app-update-status" id="appUpdateStatus">최신 버전 확인 중</span><button class="pwa-install-btn app-update-btn" hidden="True" id="applyAppUpdate" type="button">업데이트 적용</button></div>
 </div>
 <div class="layout">
@@ -3480,12 +3585,16 @@
 <span>4개 모두 바로 변경</span>
 </div>
 <div class="mobile-quick-moves">
-<label><span>1</span><select data-source-select="sampleMove1" id="mobileQuickMove1"></select></label>
-<label><span>2</span><select data-source-select="sampleMove2" id="mobileQuickMove2"></select></label>
-<label><span>3</span><select data-source-select="sampleMove3" id="mobileQuickMove3"></select></label>
-<label><span>4</span><select data-source-select="sampleMove4" id="mobileQuickMove4"></select></label>
+<label><span>1</span><input aria-label="빠른 수정 기술 1 검색" autocomplete="off" class="mobile-quick-move-search" id="mobileQuickMoveSearch1" placeholder="검색" type="search"/><select data-source-select="sampleMove1" id="mobileQuickMove1"></select></label>
+<label><span>2</span><input aria-label="빠른 수정 기술 2 검색" autocomplete="off" class="mobile-quick-move-search" id="mobileQuickMoveSearch2" placeholder="검색" type="search"/><select data-source-select="sampleMove2" id="mobileQuickMove2"></select></label>
+<label><span>3</span><input aria-label="빠른 수정 기술 3 검색" autocomplete="off" class="mobile-quick-move-search" id="mobileQuickMoveSearch3" placeholder="검색" type="search"/><select data-source-select="sampleMove3" id="mobileQuickMove3"></select></label>
+<label><span>4</span><input aria-label="빠른 수정 기술 4 검색" autocomplete="off" class="mobile-quick-move-search" id="mobileQuickMoveSearch4" placeholder="검색" type="search"/><select data-source-select="sampleMove4" id="mobileQuickMove4"></select></label>
 </div>
 <button class="mobile-quick-full-edit" id="mobileQuickFullEdit" type="button">포켓몬 · 폼 등 전체 편집</button>
+</div><div class="mobile-app-update-bar" id="mobileAppUpdateBar">
+<span class="mobile-version-chip" id="mobileVersionStatus">v17</span>
+<span class="mobile-update-text" id="mobileUpdateStatus">최신 버전 확인 중</span>
+<button class="mobile-update-btn" hidden="" id="mobileApplyUpdate" type="button">업데이트</button>
 </div></div><div class="mobile-sample-body"><div class="mobile-sample-tab-title">현재 샘플 편집</div>
 <div class="sample-title-row">
 <div class="section-title">현재 샘플</div>
@@ -3562,10 +3671,10 @@
 <span>현재는 전체 기술 목록</span>
 </div>
 <div class="sample-move-grid">
-<select id="sampleMove1"><option value="">기술 1</option></select>
-<select id="sampleMove2"><option value="">기술 2</option></select>
-<select id="sampleMove3"><option value="">기술 3</option></select>
-<select id="sampleMove4"><option value="">기술 4</option></select>
+<input aria-label="기술 1 검색" autocomplete="off" class="sample-move-search" id="sampleMoveSearch1" placeholder="기술명 검색" type="search"/><select id="sampleMove1"><option value="">기술 1</option></select>
+<input aria-label="기술 2 검색" autocomplete="off" class="sample-move-search" id="sampleMoveSearch2" placeholder="기술명 검색" type="search"/><select id="sampleMove2"><option value="">기술 2</option></select>
+<input aria-label="기술 3 검색" autocomplete="off" class="sample-move-search" id="sampleMoveSearch3" placeholder="기술명 검색" type="search"/><select id="sampleMove3"><option value="">기술 3</option></select>
+<input aria-label="기술 4 검색" autocomplete="off" class="sample-move-search" id="sampleMoveSearch4" placeholder="기술명 검색" type="search"/><select id="sampleMove4"><option value="">기술 4</option></select>
 </div>
 </div>
 </div></aside>
@@ -8512,8 +8621,13 @@ render();
   const updateBtn = document.getElementById('applyAppUpdate');
   const versionEl = document.getElementById('appVersionStatus');
 
-  const APP_VERSION_LABEL = 'v16.9';
+  const mobileVersionEl = document.getElementById('mobileVersionStatus');
+  const mobileUpdateStatusEl = document.getElementById('mobileUpdateStatus');
+  const mobileUpdateBtn = document.getElementById('mobileApplyUpdate');
+
+  const APP_VERSION_LABEL = 'v17';
   if (versionEl) versionEl.textContent = APP_VERSION_LABEL;
+  if (mobileVersionEl) mobileVersionEl.textContent = APP_VERSION_LABEL;
 
   let deferredPrompt = null;
   let waitingWorker = null;
@@ -8531,6 +8645,9 @@ render();
       updateStatusEl.classList.toggle('update-ready', !!ready);
     }
     if (updateBtn) updateBtn.hidden = !ready;
+
+    if (mobileUpdateStatusEl) mobileUpdateStatusEl.textContent = text;
+    if (mobileUpdateBtn) mobileUpdateBtn.hidden = !ready;
   }
 
   const isStandalone =
@@ -8602,12 +8719,16 @@ render();
     }, 60 * 60 * 1000);
   }
 
-  updateBtn?.addEventListener('click', () => {
+  function applyWaitingUpdate() {
     if (!waitingWorker) return;
-    updateBtn.disabled = true;
+    if (updateBtn) updateBtn.disabled = true;
+    if (mobileUpdateBtn) mobileUpdateBtn.disabled = true;
     setUpdateStatus('업데이트 적용 중', false);
     waitingWorker.postMessage({type:'SKIP_WAITING'});
-  });
+  }
+
+  updateBtn?.addEventListener('click', applyWaitingUpdate);
+  mobileUpdateBtn?.addEventListener('click', applyWaitingUpdate);
 
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -8733,6 +8854,103 @@ render();
   window.addEventListener('load',()=>{
     window.setTimeout(requestCoreDataCache,600);
   });
+})();
+</script><script>
+(() => {
+  function normalizeSearchText(value='') {
+    return String(value)
+      .toLocaleLowerCase()
+      .replace(/\s+/g,'')
+      .replace(/[·•\-_/()[\]]/g,'');
+  }
+
+  function bindMoveSearch(searchId, selectId) {
+    const search=document.getElementById(searchId);
+    const select=document.getElementById(selectId);
+    if(!search || !select) return;
+
+    let optionSnapshot=[];
+
+    function snapshotOptions() {
+      optionSnapshot=Array.from(select.options).map(o=>({
+        value:o.value,
+        text:o.textContent,
+        disabled:o.disabled
+      }));
+    }
+
+    function rebuildOptions(query='') {
+      const q=normalizeSearchText(query);
+      const currentValue=select.value;
+      const source=optionSnapshot.length ? optionSnapshot : Array.from(select.options).map(o=>({
+        value:o.value,text:o.textContent,disabled:o.disabled
+      }));
+
+      const filtered = q
+        ? source.filter(o => normalizeSearchText(o.text).includes(q) || o.value===currentValue)
+        : source;
+
+      const frag=document.createDocumentFragment();
+      filtered.forEach(o=>{
+        const opt=document.createElement('option');
+        opt.value=o.value;
+        opt.textContent=o.text;
+        opt.disabled=o.disabled;
+        frag.appendChild(opt);
+      });
+      select.replaceChildren(frag);
+
+      if(Array.from(select.options).some(o=>o.value===currentValue)){
+        select.value=currentValue;
+      }
+    }
+
+    // move options are populated asynchronously; refresh snapshot on mutations.
+    if('MutationObserver' in window){
+      const observer=new MutationObserver(()=>{
+        if(!search.value){
+          snapshotOptions();
+        }
+      });
+      observer.observe(select,{childList:true});
+    }
+
+    search.addEventListener('focus',()=>{
+      snapshotOptions();
+    });
+
+    search.addEventListener('input',()=>{
+      if(!optionSnapshot.length) snapshotOptions();
+      rebuildOptions(search.value);
+    });
+
+    search.addEventListener('search',()=>{
+      if(!search.value){
+        if(!optionSnapshot.length) snapshotOptions();
+        rebuildOptions('');
+      }
+    });
+
+    select.addEventListener('change',()=>{
+      if(search.value){
+        const selected=select.selectedOptions?.[0];
+        if(selected && !normalizeSearchText(selected.textContent).includes(normalizeSearchText(search.value))){
+          search.value='';
+          snapshotOptions();
+          rebuildOptions('');
+          select.value=selected.value;
+        }
+      }
+    });
+
+    window.setTimeout(snapshotOptions,700);
+    window.setTimeout(snapshotOptions,1800);
+  }
+
+  for(let i=1;i<=4;i++){
+    bindMoveSearch(`sampleMoveSearch${i}`,`sampleMove${i}`);
+    bindMoveSearch(`mobileQuickMoveSearch${i}`,`mobileQuickMove${i}`);
+  }
 })();
 </script></body>
 </html>
