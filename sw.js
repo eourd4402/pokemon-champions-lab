@@ -1,4 +1,4 @@
-const APP_VERSION = 'pcl-v17-4-install-ux-optimized-20260902-1';
+const APP_VERSION = 'pcl-v17-5-mobile-header-visible-20260902-1';
 const SHELL_CACHE = `${APP_VERSION}-shell`;
 const RUNTIME_CACHE = `${APP_VERSION}-runtime`;
 

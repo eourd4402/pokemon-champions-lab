@@ -11,7 +11,7 @@
 <meta content="Champions Stat Lab" name="apple-mobile-web-app-title"/>
 <link href="./manifest.webmanifest" rel="manifest"/>
 <link href="./icons/icon-180.png" rel="apple-touch-icon"/>
-<title>Pokémon Champions Stat Lab v17.4 Install UX + Optimized</title>
+<title>Pokémon Champions Stat Lab v17.5 Mobile Header Visible</title>
 <style>
     :root {
       --bg: #f5f7fb;
@@ -3785,6 +3785,73 @@
     font-size:14px;
   }
 }
+
+
+/* ===== v17.5 mobile header/install visibility ===== */
+.mobile-persistent-sentinel,
+.mobile-persistent-placeholder {
+  display:none;
+}
+
+@media (max-width:720px) {
+  /* Keep title, version/update status and install control fully visible at page top. */
+  .topbar {
+    position:relative;
+    z-index:2;
+  }
+
+  .smart-install-bar {
+    position:relative;
+    z-index:2;
+    margin:0 0 9px;
+  }
+
+  /* Override the old always-fixed sample summary. */
+  #mobilePersistentSample.mobile-persistent-sample {
+    position:relative;
+    z-index:10;
+    top:auto;
+    left:auto;
+    right:auto;
+    width:100%;
+    margin:0;
+    box-sizing:border-box;
+  }
+
+  #mobilePersistentSample.mobile-persistent-sample.is-floating {
+    position:fixed;
+    z-index:1200;
+    top:calc(7px + env(safe-area-inset-top));
+    left:10px;
+    right:10px;
+    width:auto;
+    margin:0;
+  }
+
+  .mobile-persistent-sentinel {
+    display:block;
+    width:100%;
+    height:1px;
+    margin:0;
+    padding:0;
+    pointer-events:none;
+  }
+
+  .mobile-persistent-placeholder {
+    display:none;
+    width:100%;
+    height:0;
+  }
+
+  .mobile-persistent-placeholder.is-active {
+    display:block;
+  }
+
+  /* At the very top, do not reserve the former floating-card top gap. */
+  body:not(.mobile-sample-floating) .app {
+    padding-top:calc(10px + env(safe-area-inset-top));
+  }
+}
 </style>
 </head>
 <body>
@@ -3794,14 +3861,21 @@
 <h1>Pokémon Stat Lab</h1>
 <p>PC에서는 좌우 분석 워크스페이스, 모바일에서는 접이식 샘플과 하단 메뉴로 같은 계산기를 사용합니다.</p>
 </div>
-<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.4</span>
+<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.5</span>
 <button class="pwa-install-btn" hidden="" id="pwaInstallBtn" type="button">앱 설치</button>
 <span class="pwa-status" id="pwaStatus" title="PWA 상태">웹 실행</span>
-<div class="badge">Pokémon Champions · v17.4 · Install UX + Optimized</div>
+<div class="badge">Pokémon Champions · v17.5 · Mobile Header Visible</div>
 <span class="pwa-status offline-data-status" id="offlineDataStatus">오프라인 데이터 준비 중</span><span class="pwa-status app-update-status" id="appUpdateStatus">최신 버전 확인 중</span><button class="pwa-install-btn app-update-btn" hidden="True" id="applyAppUpdate" type="button">업데이트 적용</button></div>
+</div><div class="smart-install-bar" hidden="" id="smartInstallBar">
+<div class="smart-install-main">
+<strong id="smartInstallTitle">앱으로 설치</strong>
+<span id="smartInstallHint">현재 기기에 맞는 설치 방식을 안내합니다.</span>
+</div>
+<button id="smartInstallAction" type="button">앱으로 설치</button>
+<button aria-label="설치 안내 닫기" id="smartInstallDismiss" type="button">×</button>
 </div>
 <div class="layout">
-<aside class="panel sidebar" id="currentSamplePanel"><div class="mobile-persistent-sample" id="mobilePersistentSample">
+<aside class="panel sidebar" id="currentSamplePanel"><div class="mobile-persistent-sentinel" id="mobilePersistentSentinel"></div><div class="mobile-persistent-sample" id="mobilePersistentSample">
 <div class="mobile-persistent-main">
 <div class="mobile-persistent-title-row">
 <span class="mobile-persistent-label">현재 샘플</span>
@@ -3861,10 +3935,10 @@
 </div>
 <button class="mobile-quick-full-edit" id="mobileQuickFullEdit" type="button">포켓몬 · 폼 등 전체 편집</button>
 </div><div class="mobile-app-update-bar" id="mobileAppUpdateBar">
-<span class="mobile-version-chip" id="mobileVersionStatus">v17.4</span>
+<span class="mobile-version-chip" id="mobileVersionStatus">v17.5</span>
 <span class="mobile-update-text" id="mobileUpdateStatus">최신 버전 확인 중</span>
 <button class="mobile-update-btn" hidden="" id="mobileApplyUpdate" type="button">업데이트</button>
-</div></div><div class="mobile-sample-body"><div class="mobile-sample-tab-title">현재 샘플 편집</div>
+</div></div><div aria-hidden="true" class="mobile-persistent-placeholder" id="mobilePersistentPlaceholder"></div><div class="mobile-sample-body"><div class="mobile-sample-tab-title">현재 샘플 편집</div>
 <div class="sample-title-row">
 <div class="section-title">현재 샘플</div>
 <div class="sample-fixed-chip">Lv.50 · IV31 고정</div>
@@ -8678,6 +8752,9 @@ render();
 (() => {
   const mobileQuery = window.matchMedia('(max-width:720px)');
   const samplePanel = document.getElementById('currentSamplePanel');
+  const persistentSample = document.getElementById('mobilePersistentSample');
+  const persistentSentinel = document.getElementById('mobilePersistentSentinel');
+  const persistentPlaceholder = document.getElementById('mobilePersistentPlaceholder');
   const editButton = document.getElementById('mobilePersistentEdit');
   const nameEl = document.getElementById('mobilePersistentName');
   const metaEl = document.getElementById('mobilePersistentMeta');
@@ -8778,6 +8855,54 @@ render();
         ? `${selected} · 대응 메가스톤 자동 장착`
         : (formSource.disabled ? '현재 포켓몬은 메가진화 폼 없음' : '메가폼 선택 시 메가스톤 자동 장착');
     }
+  }
+
+
+  function syncPersistentPlaceholderHeight() {
+    if (!persistentSample || !persistentPlaceholder) return;
+    if (!persistentSample.classList.contains('is-floating')) {
+      persistentPlaceholder.style.height = '0px';
+      persistentPlaceholder.classList.remove('is-active');
+      return;
+    }
+    persistentPlaceholder.style.height = `${persistentSample.offsetHeight}px`;
+    persistentPlaceholder.classList.add('is-active');
+  }
+
+  function setPersistentFloating(floating) {
+    if (!persistentSample) return;
+    const shouldFloat = !!floating && mobileQuery.matches;
+    persistentSample.classList.toggle('is-floating', shouldFloat);
+    document.body.classList.toggle('mobile-sample-floating', shouldFloat);
+    syncPersistentPlaceholderHeight();
+  }
+
+  function setupPersistentFloating() {
+    if (!persistentSample || !persistentSentinel) return;
+
+    const evaluate = () => {
+      if (!mobileQuery.matches) {
+        setPersistentFloating(false);
+        return;
+      }
+      const rect = persistentSentinel.getBoundingClientRect();
+      setPersistentFloating(rect.top < (7 + (window.visualViewport?.offsetTop || 0)));
+    };
+
+    window.addEventListener('scroll', evaluate, {passive:true});
+    window.addEventListener('resize', () => {
+      evaluate();
+      syncPersistentPlaceholderHeight();
+    }, {passive:true});
+    window.visualViewport?.addEventListener('resize', syncPersistentPlaceholderHeight, {passive:true});
+    mobileQuery.addEventListener?.('change', evaluate);
+
+    if ('ResizeObserver' in window) {
+      const ro = new ResizeObserver(syncPersistentPlaceholderHeight);
+      ro.observe(persistentSample);
+    }
+
+    evaluate();
   }
 
   function setQuickEditorOpen(open) {
@@ -8976,6 +9101,7 @@ render();
   mobileQuery.addEventListener?.('change', restoreMobileTab);
 
   bindQuickEditor();
+  setupPersistentFloating();
   restoreMobileTab();
   syncPersistentSample();
   syncQuickEditorFromSources();
@@ -8984,7 +9110,7 @@ render();
 })();
 </script><script>
 (() => {
-  const CURRENT_APP_VERSION = 'v17.4';
+  const CURRENT_APP_VERSION = 'v17.5';
   const INSTALL_DISMISS_KEY = 'pokemonChampionsStatLab.installPromptDismissed.v1';
 
   const $ = id => document.getElementById(id);
@@ -9505,20 +9631,13 @@ render();
   }
 })();
 </script>
-<div class="smart-install-bar" hidden="" id="smartInstallBar">
-<div class="smart-install-main">
-<strong id="smartInstallTitle">앱으로 설치</strong>
-<span id="smartInstallHint">현재 기기에 맞는 설치 방식을 안내합니다.</span>
-</div>
-<button id="smartInstallAction" type="button">앱으로 설치</button>
-<button aria-label="설치 안내 닫기" id="smartInstallDismiss" type="button">×</button>
-</div>
+
+
 <div class="ios-install-guide" hidden="" id="iosInstallGuide">
 <div class="ios-install-guide-card">
 <strong>홈 화면에 추가</strong>
 <p>Safari의 공유 버튼을 누른 뒤 <b>홈 화면에 추가</b>를 선택하세요.</p>
 <button id="iosInstallGuideClose" type="button">확인</button>
 </div>
-</div>
-</body>
+</div></body>
 </html>
