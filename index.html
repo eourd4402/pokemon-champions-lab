@@ -11,7 +11,7 @@
 <meta content="Champions Stat Lab" name="apple-mobile-web-app-title"/>
 <link href="./manifest.webmanifest" rel="manifest"/>
 <link href="./icons/icon-180.png" rel="apple-touch-icon"/>
-<title>Pokémon Champions Stat Lab v17.5 Mobile Header Visible</title>
+<title>Pokémon Champions Stat Lab v17.6 Android Install Guide</title>
 <style>
     :root {
       --bg: #f5f7fb;
@@ -3852,6 +3852,76 @@
     padding-top:calc(10px + env(safe-area-inset-top));
   }
 }
+
+
+/* ===== v17.6 install fallback guide ===== */
+.install-guide-modal {
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:rgba(15,23,42,.46);
+}
+.install-guide-modal[hidden] { display:none !important; }
+
+.install-guide-card {
+  width:min(380px,100%);
+  padding:18px;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 20px 60px rgba(15,23,42,.28);
+}
+
+.install-guide-card > strong {
+  display:block;
+  margin-bottom:10px;
+  font-size:17px;
+  color:#111827;
+}
+
+.install-guide-body {
+  color:#475467;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.install-guide-body p {
+  margin:0 0 10px;
+}
+
+.install-guide-body ol {
+  margin:0 0 14px;
+  padding-left:20px;
+}
+
+.install-guide-body li {
+  margin:5px 0;
+}
+
+#installGuideClose {
+  width:100%;
+  min-height:40px;
+  border:0;
+  border-radius:10px;
+  background:#2458b7;
+  color:#fff;
+  font-weight:900;
+}
+
+@media (max-width:720px) {
+  .install-guide-card {
+    padding:16px;
+    border-radius:14px;
+  }
+  .install-guide-card > strong {
+    font-size:16px;
+  }
+  .install-guide-body {
+    font-size:12px;
+  }
+}
 </style>
 </head>
 <body>
@@ -3861,10 +3931,10 @@
 <h1>Pokémon Stat Lab</h1>
 <p>PC에서는 좌우 분석 워크스페이스, 모바일에서는 접이식 샘플과 하단 메뉴로 같은 계산기를 사용합니다.</p>
 </div>
-<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.5</span>
+<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.6</span>
 <button class="pwa-install-btn" hidden="" id="pwaInstallBtn" type="button">앱 설치</button>
 <span class="pwa-status" id="pwaStatus" title="PWA 상태">웹 실행</span>
-<div class="badge">Pokémon Champions · v17.5 · Mobile Header Visible</div>
+<div class="badge">Pokémon Champions · v17.6 · Android Install Guide</div>
 <span class="pwa-status offline-data-status" id="offlineDataStatus">오프라인 데이터 준비 중</span><span class="pwa-status app-update-status" id="appUpdateStatus">최신 버전 확인 중</span><button class="pwa-install-btn app-update-btn" hidden="True" id="applyAppUpdate" type="button">업데이트 적용</button></div>
 </div><div class="smart-install-bar" hidden="" id="smartInstallBar">
 <div class="smart-install-main">
@@ -3935,7 +4005,7 @@
 </div>
 <button class="mobile-quick-full-edit" id="mobileQuickFullEdit" type="button">포켓몬 · 폼 등 전체 편집</button>
 </div><div class="mobile-app-update-bar" id="mobileAppUpdateBar">
-<span class="mobile-version-chip" id="mobileVersionStatus">v17.5</span>
+<span class="mobile-version-chip" id="mobileVersionStatus">v17.6</span>
 <span class="mobile-update-text" id="mobileUpdateStatus">최신 버전 확인 중</span>
 <button class="mobile-update-btn" hidden="" id="mobileApplyUpdate" type="button">업데이트</button>
 </div></div><div aria-hidden="true" class="mobile-persistent-placeholder" id="mobilePersistentPlaceholder"></div><div class="mobile-sample-body"><div class="mobile-sample-tab-title">현재 샘플 편집</div>
@@ -9110,9 +9180,8 @@ render();
 })();
 </script><script>
 (() => {
-  const CURRENT_APP_VERSION = 'v17.5';
+  const CURRENT_APP_VERSION = 'v17.6';
   const INSTALL_DISMISS_KEY = 'pokemonChampionsStatLab.installPromptDismissed.v1';
-
   const $ = id => document.getElementById(id);
 
   const ui = {
@@ -9129,8 +9198,10 @@ render();
     smartInstallHint: $('smartInstallHint'),
     smartInstallAction: $('smartInstallAction'),
     smartInstallDismiss: $('smartInstallDismiss'),
-    iosGuide: $('iosInstallGuide'),
-    iosGuideClose: $('iosInstallGuideClose')
+    installGuideModal: $('installGuideModal'),
+    installGuideTitle: $('installGuideTitle'),
+    installGuideBody: $('installGuideBody'),
+    installGuideClose: $('installGuideClose')
   };
 
   let deferredPrompt = null;
@@ -9144,13 +9215,14 @@ render();
     const ua = navigator.userAgent || '';
     const isIOS = /iphone|ipad|ipod/i.test(ua);
     const isAndroid = /android/i.test(ua);
+    const isSamsung = /samsungbrowser/i.test(ua);
     const isEdge = /edg\//i.test(ua);
-    const isChrome = /chrome|crios/i.test(ua) && !isEdge;
+    const isChrome = /chrome|crios/i.test(ua) && !isEdge && !isSamsung;
     const isDesktop = !isIOS && !isAndroid;
     const isStandalone =
       window.matchMedia?.('(display-mode: standalone)').matches ||
       window.navigator.standalone === true;
-    return {isIOS,isAndroid,isEdge,isChrome,isDesktop,isStandalone};
+    return {isIOS,isAndroid,isSamsung,isEdge,isChrome,isDesktop,isStandalone};
   })();
 
   function setText(el, text) {
@@ -9168,7 +9240,6 @@ render();
       el.textContent = text;
       el.classList.toggle('update-ready', !!ready);
     });
-
     [ui.updateBtn, ui.mobileUpdateBtn].forEach(btn => {
       if (!btn) return;
       btn.hidden = !ready;
@@ -9193,6 +9264,54 @@ render();
     ui.smartInstallBar.hidden = false;
   }
 
+  function showInstallGuide() {
+    if (!ui.installGuideModal || !ui.installGuideBody) return;
+
+    let title='앱 설치 방법';
+    let body='';
+
+    if (env.isIOS) {
+      title='홈 화면에 추가';
+      body=`
+        <p>iPhone/iPad에서는 웹페이지가 설치창을 직접 띄울 수 없습니다.</p>
+        <ol>
+          <li>Safari의 <b>공유</b> 버튼을 누릅니다.</li>
+          <li><b>홈 화면에 추가</b>를 선택합니다.</li>
+          <li>오른쪽 위 <b>추가</b>를 누릅니다.</li>
+        </ol>`;
+    } else if (env.isSamsung) {
+      title='삼성 인터넷에서 홈 화면에 설치';
+      body=`
+        <p>현재 브라우저는 웹페이지의 자동 설치창을 제공하지 않아 메뉴에서 설치해야 합니다.</p>
+        <ol>
+          <li>화면 아래 또는 위의 <b>≡ / ⋮ 메뉴</b>를 누릅니다.</li>
+          <li><b>페이지 추가</b> 또는 <b>홈 화면에 추가</b>를 선택합니다.</li>
+          <li><b>홈 화면</b> 또는 <b>앱 설치</b>를 선택해 완료합니다.</li>
+        </ol>`;
+    } else if (env.isAndroid) {
+      title='Android에서 홈 화면에 설치';
+      body=`
+        <p>브라우저가 자동 설치창을 아직 제공하지 않았습니다.</p>
+        <ol>
+          <li>브라우저의 <b>⋮ 메뉴</b>를 누릅니다.</li>
+          <li><b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 선택합니다.</li>
+          <li>설치를 확인합니다.</li>
+        </ol>`;
+    } else {
+      title='PC에서 앱으로 설치';
+      body=`
+        <p>브라우저의 앱 설치 기능을 사용하면 별도 창으로 실행할 수 있습니다.</p>
+        <ol>
+          <li>주소창 오른쪽의 <b>설치 아이콘</b>을 누르거나</li>
+          <li>브라우저 메뉴에서 <b>앱 설치</b>를 선택합니다.</li>
+        </ol>`;
+    }
+
+    setText(ui.installGuideTitle, title);
+    ui.installGuideBody.innerHTML = body;
+    ui.installGuideModal.hidden = false;
+  }
+
   function refreshInstallUi() {
     if (env.isStandalone) {
       hideSmartInstall(false);
@@ -9201,11 +9320,7 @@ render();
     }
 
     if (env.isIOS) {
-      showSmartInstall(
-        '홈 화면에 추가',
-        'Safari에서 홈 화면 바로가기로 설치할 수 있습니다.',
-        '추가 방법 보기'
-      );
+      showSmartInstall('홈 화면에 추가','Safari에서 홈 화면 바로가기로 설치할 수 있습니다.','추가 방법 보기');
       setPwaStatus('Safari 공유 → 홈 화면에 추가', true);
       return;
     }
@@ -9214,25 +9329,27 @@ render();
       showSmartInstall(
         env.isAndroid ? '홈 화면에 설치' : '앱으로 설치',
         env.isAndroid
-          ? '설치 후 홈 화면과 앱 목록에서 바로 실행할 수 있습니다.'
-          : '설치 후 Windows 앱처럼 별도 창으로 실행할 수 있습니다.',
-        env.isAndroid ? '홈 화면에 설치' : '앱으로 설치'
+          ? '버튼을 누르면 Android 설치창이 열립니다.'
+          : '버튼을 누르면 브라우저 설치창이 열립니다.',
+        env.isAndroid ? '지금 설치' : '앱으로 설치'
       );
       setPwaStatus('설치 가능', true);
       return;
     }
 
-    if (env.isDesktop) {
-      showSmartInstall(
-        '앱 설치',
-        'Chrome/Edge의 설치 기능이 준비되면 여기서 바로 설치할 수 있습니다.',
-        '설치 확인'
-      );
-    } else if (env.isAndroid) {
+    if (env.isAndroid) {
       showSmartInstall(
         '홈 화면에 설치',
-        '브라우저 설치 기능이 준비되면 여기서 설치할 수 있습니다.',
-        '설치 확인'
+        env.isSamsung
+          ? '삼성 인터넷 메뉴에서 홈 화면에 추가할 수 있습니다.'
+          : '브라우저 메뉴에서 앱 설치/홈 화면에 추가를 사용할 수 있습니다.',
+        '설치 방법'
+      );
+    } else if (env.isDesktop) {
+      showSmartInstall(
+        '앱 설치',
+        '브라우저 설치 기능이 준비되지 않은 경우 설치 방법을 안내합니다.',
+        '설치 방법'
       );
     }
 
@@ -9278,7 +9395,6 @@ render();
     if (registration.waiting && navigator.serviceWorker.controller) {
       waitingWorker = registration.waiting;
     }
-
     registration.addEventListener('updatefound', () => {
       const installing = registration.installing;
       if (!installing) return;
@@ -9312,10 +9428,7 @@ render();
   async function applyWaitingUpdate() {
     if (applyingUpdate) return;
     applyingUpdate = true;
-
-    [ui.updateBtn, ui.mobileUpdateBtn].forEach(btn => {
-      if (btn) btn.disabled = true;
-    });
+    [ui.updateBtn, ui.mobileUpdateBtn].forEach(btn => { if (btn) btn.disabled = true; });
     setUpdateStatus('업데이트 적용 중', false);
 
     try {
@@ -9342,11 +9455,6 @@ render();
   async function triggerInstall() {
     if (env.isStandalone) return;
 
-    if (env.isIOS) {
-      if (ui.iosGuide) ui.iosGuide.hidden = false;
-      return;
-    }
-
     if (deferredPrompt) {
       deferredPrompt.prompt();
       try { await deferredPrompt.userChoice; } catch (_) {}
@@ -9355,13 +9463,7 @@ render();
       return;
     }
 
-    // Browser has not exposed beforeinstallprompt yet.
-    setText(
-      ui.smartInstallHint,
-      env.isDesktop
-        ? '주소창의 설치 아이콘 또는 브라우저 메뉴의 앱 설치를 사용할 수 있습니다.'
-        : '브라우저 메뉴의 앱 설치/홈 화면에 추가를 사용할 수 있습니다.'
-    );
+    showInstallGuide();
   }
 
   setText(ui.version, CURRENT_APP_VERSION);
@@ -9384,11 +9486,11 @@ render();
   ui.installBtn?.addEventListener('click', triggerInstall);
   ui.smartInstallAction?.addEventListener('click', triggerInstall);
   ui.smartInstallDismiss?.addEventListener('click', () => hideSmartInstall(true));
-  ui.iosGuideClose?.addEventListener('click', () => {
-    if (ui.iosGuide) ui.iosGuide.hidden = true;
+  ui.installGuideClose?.addEventListener('click', () => {
+    if (ui.installGuideModal) ui.installGuideModal.hidden = true;
   });
-  ui.iosGuide?.addEventListener('click', event => {
-    if (event.target === ui.iosGuide) ui.iosGuide.hidden = true;
+  ui.installGuideModal?.addEventListener('click', event => {
+    if (event.target === ui.installGuideModal) ui.installGuideModal.hidden = true;
   });
 
   ui.updateBtn?.addEventListener('click', applyWaitingUpdate);
@@ -9632,12 +9734,12 @@ render();
 })();
 </script>
 
-
-<div class="ios-install-guide" hidden="" id="iosInstallGuide">
-<div class="ios-install-guide-card">
-<strong>홈 화면에 추가</strong>
-<p>Safari의 공유 버튼을 누른 뒤 <b>홈 화면에 추가</b>를 선택하세요.</p>
-<button id="iosInstallGuideClose" type="button">확인</button>
+<div class="install-guide-modal" hidden="" id="installGuideModal">
+<div aria-labelledby="installGuideTitle" aria-modal="true" class="install-guide-card" role="dialog">
+<strong id="installGuideTitle">앱 설치 방법</strong>
+<div class="install-guide-body" id="installGuideBody"></div>
+<button id="installGuideClose" type="button">확인</button>
 </div>
-</div></body>
+</div>
+</body>
 </html>
