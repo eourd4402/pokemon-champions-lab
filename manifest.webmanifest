@@ -1,0 +1,35 @@
+{
+  "id": "./",
+  "name": "Pokémon Champions Stat Lab",
+  "short_name": "Champions Lab",
+  "description": "PC 좌우형 + 모바일 상단 고정 샘플/하단 탭형 Pokémon Champions 분석 앱",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#f5f7fb",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "categories": [
+    "utilities",
+    "games"
+  ]
+}
