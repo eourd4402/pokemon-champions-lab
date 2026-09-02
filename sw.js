@@ -1,4 +1,4 @@
-const APP_VERSION = 'pcl-v17-move-search-mobile-update-20260902-1';
+const APP_VERSION = 'pcl-v17-1-authoritative-update-check-20260902-1';
 const SHELL_CACHE = `${APP_VERSION}-shell`;
 const RUNTIME_CACHE = `${APP_VERSION}-runtime`;
 
@@ -10,6 +10,7 @@ const SHELL_FILES = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './app-version.json',
   './icons/icon-180.png',
   './icons/icon-192.png',
   './icons/icon-512.png'

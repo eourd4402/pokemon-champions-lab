@@ -11,7 +11,7 @@
 <meta content="Champions Stat Lab" name="apple-mobile-web-app-title"/>
 <link href="./manifest.webmanifest" rel="manifest"/>
 <link href="./icons/icon-180.png" rel="apple-touch-icon"/>
-<title>Pokémon Champions Stat Lab v17 Move Search + Mobile Update</title>
+<title>Pokémon Champions Stat Lab v17.1 Authoritative Update Check</title>
 <style>
     :root {
       --bg: #f5f7fb;
@@ -3520,6 +3520,19 @@
         display:none !important;
       }
     }
+
+
+    /* ===== v17.1 authoritative update state ===== */
+    .app-update-status.update-ready,
+    #mobileUpdateStatus.update-ready {
+      font-weight:900;
+    }
+
+    @media (max-width:720px) {
+      #mobileUpdateStatus {
+        font-weight:800;
+      }
+    }
 </style>
 </head>
 <body>
@@ -3529,10 +3542,10 @@
 <h1>Pokémon Stat Lab</h1>
 <p>PC에서는 좌우 분석 워크스페이스, 모바일에서는 접이식 샘플과 하단 메뉴로 같은 계산기를 사용합니다.</p>
 </div>
-<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v16.9</span>
+<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.1</span>
 <button class="pwa-install-btn" hidden="" id="pwaInstallBtn" type="button">앱 설치</button>
 <span class="pwa-status" id="pwaStatus" title="PWA 상태">웹 실행</span>
-<div class="badge">Pokémon Champions · v17 · Move Search + Mobile Update</div>
+<div class="badge">Pokémon Champions · v17.1 · Authoritative Update Check</div>
 <span class="pwa-status offline-data-status" id="offlineDataStatus">오프라인 데이터 준비 중</span><span class="pwa-status app-update-status" id="appUpdateStatus">최신 버전 확인 중</span><button class="pwa-install-btn app-update-btn" hidden="True" id="applyAppUpdate" type="button">업데이트 적용</button></div>
 </div>
 <div class="layout">
@@ -3592,7 +3605,7 @@
 </div>
 <button class="mobile-quick-full-edit" id="mobileQuickFullEdit" type="button">포켓몬 · 폼 등 전체 편집</button>
 </div><div class="mobile-app-update-bar" id="mobileAppUpdateBar">
-<span class="mobile-version-chip" id="mobileVersionStatus">v17</span>
+<span class="mobile-version-chip" id="mobileVersionStatus">v17.1</span>
 <span class="mobile-update-text" id="mobileUpdateStatus">최신 버전 확인 중</span>
 <button class="mobile-update-btn" hidden="" id="mobileApplyUpdate" type="button">업데이트</button>
 </div></div><div class="mobile-sample-body"><div class="mobile-sample-tab-title">현재 샘플 편집</div>
@@ -8617,21 +8630,26 @@ render();
 (() => {
   const installBtn = document.getElementById('pwaInstallBtn');
   const statusEl = document.getElementById('pwaStatus');
+
+  const versionEl = document.getElementById('appVersionStatus');
   const updateStatusEl = document.getElementById('appUpdateStatus');
   const updateBtn = document.getElementById('applyAppUpdate');
-  const versionEl = document.getElementById('appVersionStatus');
 
   const mobileVersionEl = document.getElementById('mobileVersionStatus');
   const mobileUpdateStatusEl = document.getElementById('mobileUpdateStatus');
   const mobileUpdateBtn = document.getElementById('mobileApplyUpdate');
 
-  const APP_VERSION_LABEL = 'v17';
-  if (versionEl) versionEl.textContent = APP_VERSION_LABEL;
-  if (mobileVersionEl) mobileVersionEl.textContent = APP_VERSION_LABEL;
+  const CURRENT_APP_VERSION = 'v17.1';
 
   let deferredPrompt = null;
+  let registrationRef = null;
   let waitingWorker = null;
+  let serverVersion = null;
   let refreshing = false;
+  let applyingUpdate = false;
+
+  if (versionEl) versionEl.textContent = CURRENT_APP_VERSION;
+  if (mobileVersionEl) mobileVersionEl.textContent = CURRENT_APP_VERSION;
 
   function setPwaStatus(text, mode='') {
     if (!statusEl) return;
@@ -8644,10 +8662,60 @@ render();
       updateStatusEl.textContent = text;
       updateStatusEl.classList.toggle('update-ready', !!ready);
     }
-    if (updateBtn) updateBtn.hidden = !ready;
+    if (updateBtn) {
+      updateBtn.hidden = !ready;
+      if (!ready) updateBtn.disabled = false;
+    }
 
     if (mobileUpdateStatusEl) mobileUpdateStatusEl.textContent = text;
-    if (mobileUpdateBtn) mobileUpdateBtn.hidden = !ready;
+    if (mobileUpdateBtn) {
+      mobileUpdateBtn.hidden = !ready;
+      if (!ready) mobileUpdateBtn.disabled = false;
+    }
+  }
+
+  function versionsDiffer() {
+    return !!serverVersion && serverVersion !== CURRENT_APP_VERSION;
+  }
+
+  async function fetchServerVersion() {
+    if (!/^https?:$/.test(location.protocol)) return null;
+
+    try {
+      const url = new URL('./app-version.json', location.href);
+      url.searchParams.set('_', Date.now().toString());
+
+      const response = await fetch(url.href, {
+        cache: 'no-store',
+        headers: {'Cache-Control':'no-cache'}
+      });
+
+      if (!response.ok) throw new Error('version fetch failed');
+
+      const data = await response.json();
+      const version = String(data?.version || '').trim();
+      return version || null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  async function refreshServerVersionStatus() {
+    const latest = await fetchServerVersion();
+
+    if (!latest) {
+      // Do not claim "latest" when the server version could not be checked.
+      setUpdateStatus('최신 버전 확인 실패', false);
+      return;
+    }
+
+    serverVersion = latest;
+
+    if (versionsDiffer()) {
+      setUpdateStatus(`새 버전 ${serverVersion} 있음`, true);
+    } else {
+      setUpdateStatus(`최신 ${CURRENT_APP_VERSION} 사용 중`, false);
+    }
   }
 
   const isStandalone =
@@ -8685,46 +8753,86 @@ render();
     setPwaStatus('앱 설치됨', 'ready');
   });
 
-  async function watchRegistration(registration) {
-    // If an update was already downloaded before this page opened.
+  function watchRegistration(registration) {
+    registrationRef = registration;
+
     if (registration.waiting && navigator.serviceWorker.controller) {
       waitingWorker = registration.waiting;
-      setUpdateStatus('새 버전 준비됨', true);
-    } else {
-      setUpdateStatus('최신 버전 사용 중', false);
     }
 
     registration.addEventListener('updatefound', () => {
       const installing = registration.installing;
       if (!installing) return;
 
-      setUpdateStatus('새 버전 다운로드 중', false);
-
-      installing.addEventListener('statechange', () => {
-        if (installing.state === 'installed') {
-          if (navigator.serviceWorker.controller) {
-            waitingWorker = registration.waiting || installing;
-            setUpdateStatus('새 버전 준비됨', true);
-          } else {
-            setUpdateStatus('최신 버전 사용 중', false);
-          }
+      installing.addEventListener('statechange', async () => {
+        if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+          waitingWorker = registration.waiting || installing;
+          await refreshServerVersionStatus();
         }
       });
     });
-
-    // Check once now, then periodically.
-    try { await registration.update(); } catch (_) {}
-    window.setInterval(() => {
-      registration.update().catch(() => {});
-    }, 60 * 60 * 1000);
   }
 
-  function applyWaitingUpdate() {
-    if (!waitingWorker) return;
+  async function waitForWaitingWorker(timeoutMs=6000) {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      const reg = registrationRef;
+      if (reg?.waiting) {
+        waitingWorker = reg.waiting;
+        return waitingWorker;
+      }
+      await new Promise(resolve => setTimeout(resolve, 180));
+    }
+    return null;
+  }
+
+  async function forceFreshNavigation() {
+    // Cache-busting query defeats a stale document cache. The service worker
+    // will network-fetch this navigation and GitHub Pages serves latest index.
+    const url = new URL(location.href);
+    url.searchParams.set('app-update', Date.now().toString());
+    location.replace(url.href);
+  }
+
+  async function applyWaitingUpdate() {
+    if (applyingUpdate) return;
+    applyingUpdate = true;
+
     if (updateBtn) updateBtn.disabled = true;
     if (mobileUpdateBtn) mobileUpdateBtn.disabled = true;
     setUpdateStatus('업데이트 적용 중', false);
-    waitingWorker.postMessage({type:'SKIP_WAITING'});
+
+    try {
+      if (registrationRef) {
+        await registrationRef.update();
+      }
+
+      const worker = waitingWorker || await waitForWaitingWorker();
+
+      if (worker) {
+        waitingWorker = worker;
+        worker.postMessage({type:'SKIP_WAITING'});
+        return;
+      }
+
+      // A newer app-version.json exists but the browser did not produce a
+      // waiting worker. Force a network navigation instead of lying that the
+      // current cached page is latest.
+      if (versionsDiffer()) {
+        await forceFreshNavigation();
+        return;
+      }
+
+      await refreshServerVersionStatus();
+    } catch (_) {
+      if (versionsDiffer()) {
+        await forceFreshNavigation();
+      } else {
+        setUpdateStatus('업데이트 적용 실패', true);
+      }
+    } finally {
+      applyingUpdate = false;
+    }
   }
 
   updateBtn?.addEventListener('click', applyWaitingUpdate);
@@ -8734,17 +8842,38 @@ render();
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (refreshing) return;
       refreshing = true;
-      window.location.reload();
+
+      // After the new SW takes control, force a no-cache document request.
+      const url = new URL(location.href);
+      url.searchParams.set('updated', Date.now().toString());
+      location.replace(url.href);
     });
 
     navigator.serviceWorker.register('./sw.js', {
       scope: './',
       updateViaCache: 'none'
     })
-      .then(watchRegistration)
-      .catch(() => {
-        setUpdateStatus('업데이트 확인 실패', false);
+      .then(async registration => {
+        watchRegistration(registration);
+        try { await registration.update(); } catch (_) {}
+        await refreshServerVersionStatus();
+      })
+      .catch(async () => {
+        // Version file still tells us whether the current page is stale.
+        await refreshServerVersionStatus();
       });
+
+    window.setInterval(async () => {
+      try { await registrationRef?.update(); } catch (_) {}
+      await refreshServerVersionStatus();
+    }, 15 * 60 * 1000);
+
+    window.addEventListener('focus', refreshServerVersionStatus);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        refreshServerVersionStatus();
+      }
+    });
   } else {
     setUpdateStatus('웹 배포 시 업데이트 지원', false);
   }
