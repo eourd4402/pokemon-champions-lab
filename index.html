@@ -11,7 +11,7 @@
 <meta content="Champions Stat Lab" name="apple-mobile-web-app-title"/>
 <link href="./manifest.webmanifest" rel="manifest"/>
 <link href="./icons/icon-180.png" rel="apple-touch-icon"/>
-<title>Pokémon Champions Stat Lab v17.6 Android Install Guide</title>
+<title>Pokémon Champions Stat Lab v17.7 Mobile Layout + Chrome Handoff</title>
 <style>
     :root {
       --bg: #f5f7fb;
@@ -3922,6 +3922,39 @@
     font-size:12px;
   }
 }
+
+
+/* ===== v17.7 mobile header/version placement ===== */
+@media (max-width:720px) {
+  /* Version/update remain in the original sample-summary row only. */
+  .topbar .pwa-top-actions {
+    display:none !important;
+  }
+
+  /* More breathing room at the very top so the install area is fully visible. */
+  .app {
+    padding-top:calc(18px + env(safe-area-inset-top)) !important;
+  }
+
+  .topbar {
+    margin-bottom:12px !important;
+  }
+
+  .smart-install-bar {
+    margin:0 0 18px !important;
+  }
+
+  /* The persistent sample still starts in normal document flow.
+     It only floats after the user scrolls past it. */
+  #mobilePersistentSample.mobile-persistent-sample:not(.is-floating) {
+    margin-top:0 !important;
+  }
+
+  /* Keep the original version/update location inside the sample card. */
+  #mobilePersistentSample .mobile-app-update-bar {
+    display:flex !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -3931,10 +3964,10 @@
 <h1>Pokémon Stat Lab</h1>
 <p>PC에서는 좌우 분석 워크스페이스, 모바일에서는 접이식 샘플과 하단 메뉴로 같은 계산기를 사용합니다.</p>
 </div>
-<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.6</span>
+<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.7</span>
 <button class="pwa-install-btn" hidden="" id="pwaInstallBtn" type="button">앱 설치</button>
 <span class="pwa-status" id="pwaStatus" title="PWA 상태">웹 실행</span>
-<div class="badge">Pokémon Champions · v17.6 · Android Install Guide</div>
+<div class="badge">Pokémon Champions · v17.7 · Mobile Layout + Chrome Handoff</div>
 <span class="pwa-status offline-data-status" id="offlineDataStatus">오프라인 데이터 준비 중</span><span class="pwa-status app-update-status" id="appUpdateStatus">최신 버전 확인 중</span><button class="pwa-install-btn app-update-btn" hidden="True" id="applyAppUpdate" type="button">업데이트 적용</button></div>
 </div><div class="smart-install-bar" hidden="" id="smartInstallBar">
 <div class="smart-install-main">
@@ -4005,7 +4038,7 @@
 </div>
 <button class="mobile-quick-full-edit" id="mobileQuickFullEdit" type="button">포켓몬 · 폼 등 전체 편집</button>
 </div><div class="mobile-app-update-bar" id="mobileAppUpdateBar">
-<span class="mobile-version-chip" id="mobileVersionStatus">v17.6</span>
+<span class="mobile-version-chip" id="mobileVersionStatus">v17.7</span>
 <span class="mobile-update-text" id="mobileUpdateStatus">최신 버전 확인 중</span>
 <button class="mobile-update-btn" hidden="" id="mobileApplyUpdate" type="button">업데이트</button>
 </div></div><div aria-hidden="true" class="mobile-persistent-placeholder" id="mobilePersistentPlaceholder"></div><div class="mobile-sample-body"><div class="mobile-sample-tab-title">현재 샘플 편집</div>
@@ -9180,7 +9213,7 @@ render();
 })();
 </script><script>
 (() => {
-  const CURRENT_APP_VERSION = 'v17.6';
+  const CURRENT_APP_VERSION = 'v17.7';
   const INSTALL_DISMISS_KEY = 'pokemonChampionsStatLab.installPromptDismissed.v1';
   const $ = id => document.getElementById(id);
 
@@ -9216,13 +9249,14 @@ render();
     const isIOS = /iphone|ipad|ipod/i.test(ua);
     const isAndroid = /android/i.test(ua);
     const isSamsung = /samsungbrowser/i.test(ua);
+    const isKakao = /kakaotalk|kakao/i.test(ua);
     const isEdge = /edg\//i.test(ua);
-    const isChrome = /chrome|crios/i.test(ua) && !isEdge && !isSamsung;
+    const isChrome = /chrome|crios/i.test(ua) && !isEdge && !isSamsung && !isKakao;
     const isDesktop = !isIOS && !isAndroid;
     const isStandalone =
       window.matchMedia?.('(display-mode: standalone)').matches ||
       window.navigator.standalone === true;
-    return {isIOS,isAndroid,isSamsung,isEdge,isChrome,isDesktop,isStandalone};
+    return {isIOS,isAndroid,isSamsung,isKakao,isEdge,isChrome,isDesktop,isStandalone};
   })();
 
   function setText(el, text) {
@@ -9264,6 +9298,33 @@ render();
     ui.smartInstallBar.hidden = false;
   }
 
+
+  function openCurrentPageInChrome() {
+    if (!env.isAndroid) {
+      showInstallGuide();
+      return;
+    }
+
+    const current = new URL(location.href);
+    current.hash = '';
+
+    // Android intent hands the current HTTPS page to Chrome.
+    // The browser/OS still requires the user to approve the actual PWA install.
+    const intentPath = `${current.host}${current.pathname}${current.search}`;
+    const fallback = encodeURIComponent(current.href);
+    const intentUrl =
+      `intent://${intentPath}#Intent;scheme=https;package=com.android.chrome;` +
+      `S.browser_fallback_url=${fallback};end`;
+
+    location.href = intentUrl;
+
+    // If the in-app browser blocks intents, show a useful fallback instead
+    // of appearing to do nothing.
+    window.setTimeout(() => {
+      if (!document.hidden) showInstallGuide();
+    }, 900);
+  }
+
   function showInstallGuide() {
     if (!ui.installGuideModal || !ui.installGuideBody) return;
 
@@ -9278,6 +9339,15 @@ render();
           <li>Safari의 <b>공유</b> 버튼을 누릅니다.</li>
           <li><b>홈 화면에 추가</b>를 선택합니다.</li>
           <li>오른쪽 위 <b>추가</b>를 누릅니다.</li>
+        </ol>`;
+    } else if (env.isKakao) {
+      title='Chrome에서 열어 설치';
+      body=`
+        <p>카카오톡 안에서 열린 브라우저는 PWA 설치창을 직접 띄울 수 없습니다.</p>
+        <ol>
+          <li>이 창을 닫고 <b>Chrome에서 열기</b>를 누릅니다.</li>
+          <li>Chrome으로 열린 뒤 웹의 <b>지금 설치</b> 버튼을 누릅니다.</li>
+          <li>Android 설치 확인창에서 <b>설치</b>를 선택합니다.</li>
         </ol>`;
     } else if (env.isSamsung) {
       title='삼성 인터넷에서 홈 화면에 설치';
@@ -9334,6 +9404,16 @@ render();
         env.isAndroid ? '지금 설치' : '앱으로 설치'
       );
       setPwaStatus('설치 가능', true);
+      return;
+    }
+
+    if (env.isKakao) {
+      showSmartInstall(
+        '앱으로 설치',
+        '카카오톡 내부 브라우저에서는 직접 설치할 수 없어 Chrome으로 전환해야 합니다.',
+        'Chrome에서 열기'
+      );
+      setPwaStatus('Chrome에서 설치');
       return;
     }
 
@@ -9454,6 +9534,11 @@ render();
 
   async function triggerInstall() {
     if (env.isStandalone) return;
+
+    if (env.isKakao) {
+      openCurrentPageInChrome();
+      return;
+    }
 
     if (deferredPrompt) {
       deferredPrompt.prompt();
@@ -9733,7 +9818,6 @@ render();
   }
 })();
 </script>
-
 <div class="install-guide-modal" hidden="" id="installGuideModal">
 <div aria-labelledby="installGuideTitle" aria-modal="true" class="install-guide-card" role="dialog">
 <strong id="installGuideTitle">앱 설치 방법</strong>
