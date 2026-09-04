@@ -11,7 +11,7 @@
 <meta content="Champions Stat Lab" name="apple-mobile-web-app-title"/>
 <link href="./manifest.webmanifest" rel="manifest"/>
 <link href="./icons/icon-180.png" rel="apple-touch-icon"/>
-<title>Pokémon Champions Stat Lab v17.8 Install Bar Always Visible</title>
+<title>Pokémon Champions Stat Lab v18.1 Stability</title>
 <style>
     :root {
       --bg: #f5f7fb;
@@ -3655,334 +3655,169 @@
 }
 
 
-/* ===== v17.4 device-aware install UX ===== */
-.smart-install-bar {
+/* ===== v18.0 search helper ===== */
+.search-helper {
+  position:absolute;
+  z-index:3500;
+  left:0;
+  right:0;
+  top:calc(100% + 4px);
+  max-height:230px;
+  overflow:auto;
+  padding:5px;
+  border:1px solid #d6deea;
+  border-radius:10px;
+  background:#fff;
+  box-shadow:0 12px 30px rgba(15,23,42,.14);
+}
+
+.search-helper[hidden] {
+  display:none !important;
+}
+
+.search-helper-item {
+  width:100%;
   display:flex;
   align-items:center;
-  gap:10px;
-  margin-top:10px;
-  padding:9px 10px;
-  border:1px solid #d9e3f2;
-  border-radius:12px;
-  background:#fff;
-  box-shadow:0 6px 18px rgba(15,23,42,.05);
-}
-
-.smart-install-bar[hidden] { display:none !important; }
-
-.smart-install-main {
-  min-width:0;
-  flex:1 1 auto;
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-}
-
-.smart-install-main strong {
-  font-size:10px;
-  color:#111827;
-}
-
-.smart-install-main span {
-  font-size:8px;
-  line-height:1.35;
-  color:#667085;
-}
-
-#smartInstallAction {
-  flex:0 0 auto;
-  min-height:30px;
-  padding:6px 10px;
-  border:1px solid #b8caef;
-  border-radius:9px;
-  background:#eef4ff;
-  color:#2458b7;
+  justify-content:space-between;
+  gap:8px;
+  min-height:32px;
+  padding:7px 8px;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:#1f2937;
+  text-align:left;
+  font:inherit;
   font-size:9px;
-  font-weight:900;
+  cursor:pointer;
 }
 
-#smartInstallDismiss {
+.search-helper-item:hover,
+.search-helper-item.is-active {
+  background:#eef4ff;
+}
+
+.search-helper-main {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:800;
+}
+
+.search-helper-sub {
   flex:0 0 auto;
-  width:28px;
-  height:28px;
-  padding:0;
-  border:0;
-  border-radius:50%;
-  background:#f2f4f7;
   color:#667085;
-  font-size:16px;
-  line-height:1;
+  font-size:8px;
 }
 
-.ios-install-guide {
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  display:grid;
-  place-items:center;
-  padding:20px;
-  background:rgba(15,23,42,.45);
+.search-helper-empty {
+  padding:9px;
+  color:#98a2b3;
+  font-size:9px;
 }
 
-.ios-install-guide[hidden] { display:none !important; }
-
-.ios-install-guide-card {
-  width:min(340px,100%);
-  padding:18px;
-  border-radius:16px;
-  background:#fff;
-  box-shadow:0 20px 60px rgba(15,23,42,.24);
+.field,
+.sample-item-search,
+.sample-move-grid,
+.mobile-quick-moves label {
+  position:relative;
 }
 
-.ios-install-guide-card strong {
-  display:block;
-  margin-bottom:8px;
-  font-size:16px;
-}
-
-.ios-install-guide-card p {
-  margin:0 0 14px;
-  color:#475467;
-  font-size:13px;
-  line-height:1.55;
-}
-
-#iosInstallGuideClose {
-  width:100%;
-  min-height:38px;
-  border:0;
-  border-radius:10px;
-  background:#2458b7;
-  color:#fff;
-  font-weight:900;
+.sample-move-grid > .search-helper {
+  position:absolute;
+  width:calc(50% - 5px);
 }
 
 @media (max-width:720px) {
-  .smart-install-bar {
-    margin:6px 8px 0;
-    padding:7px 8px;
-    gap:7px;
+  .search-helper {
+    max-height:260px;
     border-radius:10px;
   }
 
-  .smart-install-main strong {
-    font-size:9px;
+  .search-helper-item {
+    min-height:40px;
+    padding:9px 10px;
+    font-size:12px;
   }
 
-  .smart-install-main span {
-    font-size:7px;
+  .search-helper-sub {
+    font-size:10px;
   }
 
-  #smartInstallAction {
-    min-height:28px;
-    padding:5px 8px;
-    font-size:8px;
-  }
-
-  #smartInstallDismiss {
-    width:24px;
-    height:24px;
-    font-size:14px;
-  }
-}
-
-
-/* ===== v17.5 mobile header/install visibility ===== */
-.mobile-persistent-sentinel,
-.mobile-persistent-placeholder {
-  display:none;
-}
-
-@media (max-width:720px) {
-  /* Keep title, version/update status and install control fully visible at page top. */
-  .topbar {
-    position:relative;
-    z-index:2;
-  }
-
-  .smart-install-bar {
-    position:relative;
-    z-index:2;
-    margin:0 0 9px;
-  }
-
-  /* Override the old always-fixed sample summary. */
-  #mobilePersistentSample.mobile-persistent-sample {
-    position:relative;
-    z-index:10;
-    top:auto;
-    left:auto;
-    right:auto;
-    width:100%;
-    margin:0;
-    box-sizing:border-box;
-  }
-
-  #mobilePersistentSample.mobile-persistent-sample.is-floating {
-    position:fixed;
-    z-index:1200;
-    top:calc(7px + env(safe-area-inset-top));
-    left:10px;
-    right:10px;
+  /* Sample moves are laid out in two columns; helper follows each input's own box. */
+  .sample-move-grid > .search-helper {
     width:auto;
-    margin:0;
-  }
-
-  .mobile-persistent-sentinel {
-    display:block;
-    width:100%;
-    height:1px;
-    margin:0;
-    padding:0;
-    pointer-events:none;
-  }
-
-  .mobile-persistent-placeholder {
-    display:none;
-    width:100%;
-    height:0;
-  }
-
-  .mobile-persistent-placeholder.is-active {
-    display:block;
-  }
-
-  /* At the very top, do not reserve the former floating-card top gap. */
-  body:not(.mobile-sample-floating) .app {
-    padding-top:calc(10px + env(safe-area-inset-top));
   }
 }
 
 
-/* ===== v17.6 install fallback guide ===== */
+/* ===== v18.1 consolidated install + mobile persistent layout ===== */
+.smart-install-bar {
+  display:flex; align-items:center; gap:10px; margin:0 0 10px; padding:9px 10px;
+  border:1px solid #d9e3f2; border-radius:12px; background:#fff;
+  box-shadow:0 6px 18px rgba(15,23,42,.05);
+}
+.smart-install-bar[hidden] { display:none !important; }
+.smart-install-main { min-width:0; flex:1 1 auto; display:flex; flex-direction:column; gap:2px; }
+.smart-install-main strong { font-size:10px; color:#111827; }
+.smart-install-main span { font-size:8px; line-height:1.35; color:#667085; }
+#smartInstallAction {
+  flex:0 0 auto; min-height:30px; padding:6px 10px; border:1px solid #b8caef;
+  border-radius:9px; background:#eef4ff; color:#2458b7; font-size:9px; font-weight:900;
+}
+#smartInstallDismiss {
+  flex:0 0 auto; width:28px; height:28px; padding:0; border:0; border-radius:50%;
+  background:#f2f4f7; color:#667085; font-size:16px; line-height:1;
+}
 .install-guide-modal {
-  position:fixed;
-  inset:0;
-  z-index:10000;
-  display:grid;
-  place-items:center;
-  padding:20px;
+  position:fixed; inset:0; z-index:10000; display:grid; place-items:center; padding:20px;
   background:rgba(15,23,42,.46);
 }
 .install-guide-modal[hidden] { display:none !important; }
-
 .install-guide-card {
-  width:min(380px,100%);
-  padding:18px;
-  border-radius:16px;
-  background:#fff;
+  width:min(380px,100%); padding:18px; border-radius:16px; background:#fff;
   box-shadow:0 20px 60px rgba(15,23,42,.28);
 }
-
-.install-guide-card > strong {
-  display:block;
-  margin-bottom:10px;
-  font-size:17px;
-  color:#111827;
-}
-
-.install-guide-body {
-  color:#475467;
-  font-size:13px;
-  line-height:1.6;
-}
-
-.install-guide-body p {
-  margin:0 0 10px;
-}
-
-.install-guide-body ol {
-  margin:0 0 14px;
-  padding-left:20px;
-}
-
-.install-guide-body li {
-  margin:5px 0;
-}
-
+.install-guide-card > strong { display:block; margin-bottom:10px; font-size:17px; color:#111827; }
+.install-guide-body { color:#475467; font-size:13px; line-height:1.6; }
+.install-guide-body p { margin:0 0 10px; }
+.install-guide-body ol { margin:0 0 14px; padding-left:20px; }
+.install-guide-body li { margin:5px 0; }
 #installGuideClose {
-  width:100%;
-  min-height:40px;
-  border:0;
-  border-radius:10px;
-  background:#2458b7;
-  color:#fff;
-  font-weight:900;
+  width:100%; min-height:40px; border:0; border-radius:10px; background:#2458b7;
+  color:#fff; font-weight:900;
 }
 
+.mobile-persistent-sentinel,
+.mobile-persistent-placeholder { display:none; }
+
 @media (max-width:720px) {
-  .install-guide-card {
-    padding:16px;
-    border-radius:14px;
-  }
-  .install-guide-card > strong {
-    font-size:16px;
-  }
-  .install-guide-body {
-    font-size:12px;
-  }
-}
+  #smartInstallBar,
+  #installGuideModal,
+  .topbar .pwa-top-actions { display:none !important; }
 
+  .app { padding-top:calc(18px + env(safe-area-inset-top)) !important; }
+  .topbar { position:relative; z-index:2; margin-bottom:12px !important; }
 
-/* ===== v17.7 mobile header/version placement ===== */
-@media (max-width:720px) {
-  /* Version/update remain in the original sample-summary row only. */
-  .topbar .pwa-top-actions {
-    display:none !important;
+  #mobilePersistentSample .mobile-app-update-bar { display:flex !important; }
+
+  #mobilePersistentSample.mobile-persistent-sample {
+    position:relative; z-index:10; top:auto; left:auto; right:auto; width:100%;
+    margin:0; box-sizing:border-box;
   }
-
-  /* More breathing room at the very top so the install area is fully visible. */
-  .app {
-    padding-top:calc(18px + env(safe-area-inset-top)) !important;
+  #mobilePersistentSample.mobile-persistent-sample.is-floating {
+    position:fixed; z-index:1200; top:calc(7px + env(safe-area-inset-top));
+    left:10px; right:10px; width:auto; margin:0;
   }
+  #mobilePersistentSample.mobile-persistent-sample:not(.is-floating) { margin-top:0 !important; }
 
-  .topbar {
-    margin-bottom:12px !important;
+  .mobile-persistent-sentinel {
+    display:block; width:100%; height:1px; margin:0; padding:0; pointer-events:none;
   }
-
-  .smart-install-bar {
-    margin:0 0 18px !important;
-  }
-
-  /* The persistent sample still starts in normal document flow.
-     It only floats after the user scrolls past it. */
-  #mobilePersistentSample.mobile-persistent-sample:not(.is-floating) {
-    margin-top:0 !important;
-  }
-
-  /* Keep the original version/update location inside the sample card. */
-  #mobilePersistentSample .mobile-app-update-bar {
-    display:flex !important;
-  }
-}
-
-
-/* ===== v17.8 persistent install CTA on mobile ===== */
-@media (max-width:720px) {
-  #smartInstallBar.smart-install-bar {
-    display:flex;
-    margin:0 0 16px !important;
-    padding:10px 10px;
-    border-width:1px;
-    border-color:#b8caef;
-    background:#f7faff;
-  }
-
-  #smartInstallBar.smart-install-bar[hidden] {
-    display:none !important;
-  }
-
-  #smartInstallAction {
-    min-height:34px;
-    padding:7px 10px;
-    font-size:9px;
-  }
-
-  /* On mobile we intentionally do not offer a dismiss button anymore.
-     The install area disappears only once the app is actually running standalone. */
-  #smartInstallDismiss {
-    display:none !important;
-  }
+  .mobile-persistent-placeholder { display:none; width:100%; height:0; }
+  .mobile-persistent-placeholder.is-active { display:block; }
 }
 </style>
 </head>
@@ -3993,10 +3828,10 @@
 <h1>Pokémon Stat Lab</h1>
 <p>PC에서는 좌우 분석 워크스페이스, 모바일에서는 접이식 샘플과 하단 메뉴로 같은 계산기를 사용합니다.</p>
 </div>
-<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v17.8</span>
+<div class="pwa-top-actions"><span class="pwa-status app-version-status ready" id="appVersionStatus">v18.1</span>
 <button class="pwa-install-btn" hidden="" id="pwaInstallBtn" type="button">앱 설치</button>
 <span class="pwa-status" id="pwaStatus" title="PWA 상태">웹 실행</span>
-<div class="badge">Pokémon Champions · v17.8 · Install Bar Always Visible</div>
+<div class="badge">Pokémon Champions · v18.1 · Stability</div>
 <span class="pwa-status offline-data-status" id="offlineDataStatus">오프라인 데이터 준비 중</span><span class="pwa-status app-update-status" id="appUpdateStatus">최신 버전 확인 중</span><button class="pwa-install-btn app-update-btn" hidden="True" id="applyAppUpdate" type="button">업데이트 적용</button></div>
 </div><div class="smart-install-bar" hidden="" id="smartInstallBar">
 <div class="smart-install-main">
@@ -4060,14 +3895,14 @@
 <span>4개 모두 바로 변경</span>
 </div>
 <div class="mobile-quick-moves">
-<label><span>1</span><input aria-label="빠른 수정 기술 1 검색" autocomplete="off" class="mobile-quick-move-search" id="mobileQuickMoveSearch1" placeholder="검색" type="search"/><select data-source-select="sampleMove1" id="mobileQuickMove1"></select></label>
-<label><span>2</span><input aria-label="빠른 수정 기술 2 검색" autocomplete="off" class="mobile-quick-move-search" id="mobileQuickMoveSearch2" placeholder="검색" type="search"/><select data-source-select="sampleMove2" id="mobileQuickMove2"></select></label>
-<label><span>3</span><input aria-label="빠른 수정 기술 3 검색" autocomplete="off" class="mobile-quick-move-search" id="mobileQuickMoveSearch3" placeholder="검색" type="search"/><select data-source-select="sampleMove3" id="mobileQuickMove3"></select></label>
-<label><span>4</span><input aria-label="빠른 수정 기술 4 검색" autocomplete="off" class="mobile-quick-move-search" id="mobileQuickMoveSearch4" placeholder="검색" type="search"/><select data-source-select="sampleMove4" id="mobileQuickMove4"></select></label>
+<label><span>1</span><input aria-autocomplete="list" aria-controls="mobileQuickMoveSearch1Helper" aria-label="빠른 수정 기술 1 검색" autocomplete="off" class="mobile-quick-move-search" data-search-helper-kind="move" id="mobileQuickMoveSearch1" placeholder="검색" type="search"/><div aria-label="기술 후보" class="search-helper" data-for="mobileQuickMoveSearch1" hidden="" id="mobileQuickMoveSearch1Helper" role="listbox"></div><select data-source-select="sampleMove1" id="mobileQuickMove1"></select></label>
+<label><span>2</span><input aria-autocomplete="list" aria-controls="mobileQuickMoveSearch2Helper" aria-label="빠른 수정 기술 2 검색" autocomplete="off" class="mobile-quick-move-search" data-search-helper-kind="move" id="mobileQuickMoveSearch2" placeholder="검색" type="search"/><div aria-label="기술 후보" class="search-helper" data-for="mobileQuickMoveSearch2" hidden="" id="mobileQuickMoveSearch2Helper" role="listbox"></div><select data-source-select="sampleMove2" id="mobileQuickMove2"></select></label>
+<label><span>3</span><input aria-autocomplete="list" aria-controls="mobileQuickMoveSearch3Helper" aria-label="빠른 수정 기술 3 검색" autocomplete="off" class="mobile-quick-move-search" data-search-helper-kind="move" id="mobileQuickMoveSearch3" placeholder="검색" type="search"/><div aria-label="기술 후보" class="search-helper" data-for="mobileQuickMoveSearch3" hidden="" id="mobileQuickMoveSearch3Helper" role="listbox"></div><select data-source-select="sampleMove3" id="mobileQuickMove3"></select></label>
+<label><span>4</span><input aria-autocomplete="list" aria-controls="mobileQuickMoveSearch4Helper" aria-label="빠른 수정 기술 4 검색" autocomplete="off" class="mobile-quick-move-search" data-search-helper-kind="move" id="mobileQuickMoveSearch4" placeholder="검색" type="search"/><div aria-label="기술 후보" class="search-helper" data-for="mobileQuickMoveSearch4" hidden="" id="mobileQuickMoveSearch4Helper" role="listbox"></div><select data-source-select="sampleMove4" id="mobileQuickMove4"></select></label>
 </div>
 <button class="mobile-quick-full-edit" id="mobileQuickFullEdit" type="button">포켓몬 · 폼 등 전체 편집</button>
 </div><div class="mobile-app-update-bar" id="mobileAppUpdateBar">
-<span class="mobile-version-chip" id="mobileVersionStatus">v17.8</span>
+<span class="mobile-version-chip" id="mobileVersionStatus">v18.1</span>
 <span class="mobile-update-text" id="mobileUpdateStatus">최신 버전 확인 중</span>
 <button class="mobile-update-btn" hidden="" id="mobileApplyUpdate" type="button">업데이트</button>
 </div></div><div aria-hidden="true" class="mobile-persistent-placeholder" id="mobilePersistentPlaceholder"></div><div class="mobile-sample-body"><div class="mobile-sample-tab-title">현재 샘플 편집</div>
@@ -4077,7 +3912,7 @@
 </div>
 <div class="field">
 <label for="pokemonSearch">포켓몬 검색</label>
-<input id="pokemonSearch" placeholder="한글/영문 이름 검색" type="text"/>
+<input aria-autocomplete="list" aria-controls="pokemonSearchHelper" autocomplete="off" data-search-helper-kind="pokemon" id="pokemonSearch" placeholder="한글/영문 이름 검색" type="text"/><div aria-label="포켓몬 후보" class="search-helper" data-for="pokemonSearch" hidden="" id="pokemonSearchHelper" role="listbox"></div>
 </div>
 <div class="field">
 <label for="pokemon">포켓몬 · Champions 208종</label>
@@ -4108,7 +3943,7 @@
 <div class="field" style="margin-top:9px">
 <label for="heldItem">지닌 도구</label>
 <div class="sample-item-search">
-<input id="sampleItemSearch" placeholder="도구 한글/영문 검색" type="search"/>
+<input aria-autocomplete="list" aria-controls="sampleItemSearchHelper" autocomplete="off" data-search-helper-kind="item" id="sampleItemSearch" placeholder="도구 한글/영문 검색" type="search"/><div aria-label="도구 후보" class="search-helper" data-for="sampleItemSearch" hidden="" id="sampleItemSearchHelper" role="listbox"></div>
 <span class="sample-item-count" id="sampleItemCount">로딩 중</span>
 </div>
 <select id="heldItem"></select>
@@ -4146,10 +3981,10 @@
 <span>현재는 전체 기술 목록</span>
 </div>
 <div class="sample-move-grid">
-<input aria-label="기술 1 검색" autocomplete="off" class="sample-move-search" id="sampleMoveSearch1" placeholder="기술명 검색" type="search"/><select id="sampleMove1"><option value="">기술 1</option></select>
-<input aria-label="기술 2 검색" autocomplete="off" class="sample-move-search" id="sampleMoveSearch2" placeholder="기술명 검색" type="search"/><select id="sampleMove2"><option value="">기술 2</option></select>
-<input aria-label="기술 3 검색" autocomplete="off" class="sample-move-search" id="sampleMoveSearch3" placeholder="기술명 검색" type="search"/><select id="sampleMove3"><option value="">기술 3</option></select>
-<input aria-label="기술 4 검색" autocomplete="off" class="sample-move-search" id="sampleMoveSearch4" placeholder="기술명 검색" type="search"/><select id="sampleMove4"><option value="">기술 4</option></select>
+<input aria-autocomplete="list" aria-controls="sampleMoveSearch1Helper" aria-label="기술 1 검색" autocomplete="off" class="sample-move-search" data-search-helper-kind="move" id="sampleMoveSearch1" placeholder="기술명 검색" type="search"/><div aria-label="기술 후보" class="search-helper" data-for="sampleMoveSearch1" hidden="" id="sampleMoveSearch1Helper" role="listbox"></div><select id="sampleMove1"><option value="">기술 1</option></select>
+<input aria-autocomplete="list" aria-controls="sampleMoveSearch2Helper" aria-label="기술 2 검색" autocomplete="off" class="sample-move-search" data-search-helper-kind="move" id="sampleMoveSearch2" placeholder="기술명 검색" type="search"/><div aria-label="기술 후보" class="search-helper" data-for="sampleMoveSearch2" hidden="" id="sampleMoveSearch2Helper" role="listbox"></div><select id="sampleMove2"><option value="">기술 2</option></select>
+<input aria-autocomplete="list" aria-controls="sampleMoveSearch3Helper" aria-label="기술 3 검색" autocomplete="off" class="sample-move-search" data-search-helper-kind="move" id="sampleMoveSearch3" placeholder="기술명 검색" type="search"/><div aria-label="기술 후보" class="search-helper" data-for="sampleMoveSearch3" hidden="" id="sampleMoveSearch3Helper" role="listbox"></div><select id="sampleMove3"><option value="">기술 3</option></select>
+<input aria-autocomplete="list" aria-controls="sampleMoveSearch4Helper" aria-label="기술 4 검색" autocomplete="off" class="sample-move-search" data-search-helper-kind="move" id="sampleMoveSearch4" placeholder="기술명 검색" type="search"/><div aria-label="기술 후보" class="search-helper" data-for="sampleMoveSearch4" hidden="" id="sampleMoveSearch4Helper" role="listbox"></div><select id="sampleMove4"><option value="">기술 4</option></select>
 </div>
 </div>
 </div></aside>
@@ -4307,7 +4142,7 @@
 <div class="attack-control-grid">
 <div class="wide">
 <label for="attackPokemonSearch">상대 포켓몬 검색</label>
-<input id="attackPokemonSearch" placeholder="한글 또는 영문 포켓몬명 검색" type="search"/>
+<input aria-autocomplete="list" aria-controls="attackPokemonSearchHelper" autocomplete="off" data-search-helper-kind="battlePokemon" id="attackPokemonSearch" placeholder="한글 또는 영문 포켓몬명 검색" type="search"/><div aria-label="포켓몬 후보" class="search-helper" data-for="attackPokemonSearch" hidden="" id="attackPokemonSearchHelper" role="listbox"></div>
 </div>
 <div class="wide">
 <label for="attackPokemonSelect">상대 포켓몬</label>
@@ -4315,7 +4150,7 @@
 </div>
 <div class="wide">
 <label for="attackMoveSearch">기술 검색</label>
-<input id="attackMoveSearch" placeholder="한글 또는 영문 기술명 검색" type="search"/>
+<input aria-autocomplete="list" aria-controls="attackMoveSearchHelper" autocomplete="off" data-search-helper-kind="move" id="attackMoveSearch" placeholder="한글 또는 영문 기술명 검색" type="search"/><div aria-label="기술 후보" class="search-helper" data-for="attackMoveSearch" hidden="" id="attackMoveSearchHelper" role="listbox"></div>
 </div>
 <div class="wide">
 <label for="attackMoveSelect">기술</label>
@@ -4664,7 +4499,7 @@
 <div class="offense-form-grid">
 <div class="wide">
 <label for="offenseMoveSearch">기술 검색</label>
-<input id="offenseMoveSearch" placeholder="한글 또는 영문 기술명 검색" type="search"/>
+<input aria-autocomplete="list" aria-controls="offenseMoveSearchHelper" autocomplete="off" data-search-helper-kind="move" id="offenseMoveSearch" placeholder="한글 또는 영문 기술명 검색" type="search"/><div aria-label="기술 후보" class="search-helper" data-for="offenseMoveSearch" hidden="" id="offenseMoveSearchHelper" role="listbox"></div>
 </div>
 <div class="wide">
 <label for="offenseMoveSelect">기술</label>
@@ -4715,7 +4550,7 @@
 <div class="offense-form-grid">
 <div class="wide">
 <label for="offenseTargetSearch">상대 포켓몬 검색</label>
-<input id="offenseTargetSearch" placeholder="한글 또는 영문 포켓몬명 검색" type="search"/>
+<input aria-autocomplete="list" aria-controls="offenseTargetSearchHelper" autocomplete="off" data-search-helper-kind="battlePokemon" id="offenseTargetSearch" placeholder="한글 또는 영문 포켓몬명 검색" type="search"/><div aria-label="포켓몬 후보" class="search-helper" data-for="offenseTargetSearch" hidden="" id="offenseTargetSearchHelper" role="listbox"></div>
 </div>
 <div class="wide">
 <label for="offenseTargetSelect">상대 포켓몬</label>
@@ -4964,7 +4799,7 @@
 <h3>스피드 기준선</h3>
 <p>Champions 기본 종과 메가진화 폼의 속도 기준선을 비교합니다. 기본 화면은 준속·최속이며, 무보정(S0)은 별도 기준으로 선택할 수 있습니다.</p>
 <div class="speed-search">
-<input id="speedPokemonSearch" placeholder="비교할 포켓몬 검색 (한글 / 영문)" type="search"/>
+<input aria-autocomplete="list" aria-controls="speedPokemonSearchHelper" autocomplete="off" data-search-helper-kind="speed" id="speedPokemonSearch" placeholder="비교할 포켓몬 검색 (한글 / 영문)" type="search"/><div aria-label="포켓몬 후보" class="search-helper" data-for="speedPokemonSearch" hidden="" id="speedPokemonSearchHelper" role="listbox"></div>
 </div>
 <div class="speed-tools">
 <select id="speedView">
@@ -5015,6 +4850,23 @@ const stats = [
 const championsRoster = [{"dex": 3, "en": "Venusaur"}, {"dex": 6, "en": "Charizard"}, {"dex": 9, "en": "Blastoise"}, {"dex": 15, "en": "Beedrill"}, {"dex": 18, "en": "Pidgeot"}, {"dex": 24, "en": "Arbok"}, {"dex": 25, "en": "Pikachu"}, {"dex": 26, "en": "Raichu"}, {"dex": 36, "en": "Clefable"}, {"dex": 38, "en": "Ninetales"}, {"dex": 45, "en": "Vileplume"}, {"dex": 59, "en": "Arcanine"}, {"dex": 65, "en": "Alakazam"}, {"dex": 68, "en": "Machamp"}, {"dex": 71, "en": "Victreebel"}, {"dex": 80, "en": "Slowbro"}, {"dex": 94, "en": "Gengar"}, {"dex": 115, "en": "Kangaskhan"}, {"dex": 121, "en": "Starmie"}, {"dex": 127, "en": "Pinsir"}, {"dex": 128, "en": "Tauros"}, {"dex": 130, "en": "Gyarados"}, {"dex": 132, "en": "Ditto"}, {"dex": 134, "en": "Vaporeon"}, {"dex": 135, "en": "Jolteon"}, {"dex": 136, "en": "Flareon"}, {"dex": 142, "en": "Aerodactyl"}, {"dex": 143, "en": "Snorlax"}, {"dex": 149, "en": "Dragonite"}, {"dex": 154, "en": "Meganium"}, {"dex": 157, "en": "Typhlosion"}, {"dex": 160, "en": "Feraligatr"}, {"dex": 168, "en": "Ariados"}, {"dex": 181, "en": "Ampharos"}, {"dex": 184, "en": "Azumarill"}, {"dex": 186, "en": "Politoed"}, {"dex": 196, "en": "Espeon"}, {"dex": 197, "en": "Umbreon"}, {"dex": 199, "en": "Slowking"}, {"dex": 205, "en": "Forretress"}, {"dex": 208, "en": "Steelix"}, {"dex": 211, "en": "Qwilfish"}, {"dex": 212, "en": "Scizor"}, {"dex": 214, "en": "Heracross"}, {"dex": 227, "en": "Skarmory"}, {"dex": 229, "en": "Houndoom"}, {"dex": 248, "en": "Tyranitar"}, {"dex": 254, "en": "Sceptile"}, {"dex": 257, "en": "Blaziken"}, {"dex": 260, "en": "Swampert"}, {"dex": 279, "en": "Pelipper"}, {"dex": 282, "en": "Gardevoir"}, {"dex": 302, "en": "Sableye"}, {"dex": 303, "en": "Mawile"}, {"dex": 306, "en": "Aggron"}, {"dex": 308, "en": "Medicham"}, {"dex": 310, "en": "Manectric"}, {"dex": 319, "en": "Sharpedo"}, {"dex": 323, "en": "Camerupt"}, {"dex": 324, "en": "Torkoal"}, {"dex": 334, "en": "Altaria"}, {"dex": 350, "en": "Milotic"}, {"dex": 351, "en": "Castform"}, {"dex": 354, "en": "Banette"}, {"dex": 358, "en": "Chimecho"}, {"dex": 359, "en": "Absol"}, {"dex": 362, "en": "Glalie"}, {"dex": 376, "en": "Metagross"}, {"dex": 389, "en": "Torterra"}, {"dex": 392, "en": "Infernape"}, {"dex": 395, "en": "Empoleon"}, {"dex": 398, "en": "Staraptor"}, {"dex": 405, "en": "Luxray"}, {"dex": 407, "en": "Roserade"}, {"dex": 409, "en": "Rampardos"}, {"dex": 411, "en": "Bastiodon"}, {"dex": 428, "en": "Lopunny"}, {"dex": 442, "en": "Spiritomb"}, {"dex": 445, "en": "Garchomp"}, {"dex": 448, "en": "Lucario"}, {"dex": 450, "en": "Hippowdon"}, {"dex": 454, "en": "Toxicroak"}, {"dex": 460, "en": "Abomasnow"}, {"dex": 461, "en": "Weavile"}, {"dex": 464, "en": "Rhyperior"}, {"dex": 470, "en": "Leafeon"}, {"dex": 471, "en": "Glaceon"}, {"dex": 472, "en": "Gliscor"}, {"dex": 473, "en": "Mamoswine"}, {"dex": 475, "en": "Gallade"}, {"dex": 478, "en": "Froslass"}, {"dex": 479, "en": "Rotom"}, {"dex": 497, "en": "Serperior"}, {"dex": 500, "en": "Emboar"}, {"dex": 503, "en": "Samurott"}, {"dex": 505, "en": "Watchog"}, {"dex": 510, "en": "Liepard"}, {"dex": 512, "en": "Simisage"}, {"dex": 514, "en": "Simisear"}, {"dex": 516, "en": "Simipour"}, {"dex": 518, "en": "Musharna"}, {"dex": 530, "en": "Excadrill"}, {"dex": 531, "en": "Audino"}, {"dex": 534, "en": "Conkeldurr"}, {"dex": 545, "en": "Scolipede"}, {"dex": 547, "en": "Whimsicott"}, {"dex": 553, "en": "Krookodile"}, {"dex": 560, "en": "Scrafty"}, {"dex": 563, "en": "Cofagrigus"}, {"dex": 569, "en": "Garbodor"}, {"dex": 571, "en": "Zoroark"}, {"dex": 579, "en": "Reuniclus"}, {"dex": 584, "en": "Vanilluxe"}, {"dex": 587, "en": "Emolga"}, {"dex": 604, "en": "Eelektross"}, {"dex": 609, "en": "Chandelure"}, {"dex": 614, "en": "Beartic"}, {"dex": 618, "en": "Stunfisk"}, {"dex": 623, "en": "Golurk"}, {"dex": 635, "en": "Hydreigon"}, {"dex": 637, "en": "Volcarona"}, {"dex": 652, "en": "Chesnaught"}, {"dex": 655, "en": "Delphox"}, {"dex": 658, "en": "Greninja"}, {"dex": 660, "en": "Diggersby"}, {"dex": 663, "en": "Talonflame"}, {"dex": 666, "en": "Vivillon"}, {"dex": 668, "en": "Pyroar"}, {"dex": 670, "en": "Floette"}, {"dex": 671, "en": "Florges"}, {"dex": 675, "en": "Pangoro"}, {"dex": 676, "en": "Furfrou"}, {"dex": 678, "en": "Meowstic"}, {"dex": 681, "en": "Aegislash"}, {"dex": 683, "en": "Aromatisse"}, {"dex": 685, "en": "Slurpuff"}, {"dex": 687, "en": "Malamar"}, {"dex": 689, "en": "Barbaracle"}, {"dex": 691, "en": "Dragalge"}, {"dex": 693, "en": "Clawitzer"}, {"dex": 695, "en": "Heliolisk"}, {"dex": 697, "en": "Tyrantrum"}, {"dex": 699, "en": "Aurorus"}, {"dex": 700, "en": "Sylveon"}, {"dex": 701, "en": "Hawlucha"}, {"dex": 702, "en": "Dedenne"}, {"dex": 706, "en": "Goodra"}, {"dex": 707, "en": "Klefki"}, {"dex": 709, "en": "Trevenant"}, {"dex": 711, "en": "Gourgeist"}, {"dex": 713, "en": "Avalugg"}, {"dex": 715, "en": "Noivern"}, {"dex": 724, "en": "Decidueye"}, {"dex": 727, "en": "Incineroar"}, {"dex": 730, "en": "Primarina"}, {"dex": 733, "en": "Toucannon"}, {"dex": 740, "en": "Crabominable"}, {"dex": 745, "en": "Lycanroc"}, {"dex": 748, "en": "Toxapex"}, {"dex": 750, "en": "Mudsdale"}, {"dex": 752, "en": "Araquanid"}, {"dex": 758, "en": "Salazzle"}, {"dex": 763, "en": "Tsareena"}, {"dex": 765, "en": "Oranguru"}, {"dex": 766, "en": "Passimian"}, {"dex": 778, "en": "Mimikyu"}, {"dex": 780, "en": "Drampa"}, {"dex": 784, "en": "Kommo-o"}, {"dex": 823, "en": "Corviknight"}, {"dex": 841, "en": "Flapple"}, {"dex": 842, "en": "Appletun"}, {"dex": 844, "en": "Sandaconda"}, {"dex": 855, "en": "Polteageist"}, {"dex": 858, "en": "Hatterene"}, {"dex": 861, "en": "Grimmsnarl"}, {"dex": 866, "en": "Mr. Rime"}, {"dex": 867, "en": "Runerigus"}, {"dex": 869, "en": "Alcremie"}, {"dex": 870, "en": "Falinks"}, {"dex": 877, "en": "Morpeko"}, {"dex": 887, "en": "Dragapult"}, {"dex": 899, "en": "Wyrdeer"}, {"dex": 900, "en": "Kleavor"}, {"dex": 902, "en": "Basculegion"}, {"dex": 903, "en": "Sneasler"}, {"dex": 904, "en": "Overqwil"}, {"dex": 908, "en": "Meowscarada"}, {"dex": 911, "en": "Skeledirge"}, {"dex": 914, "en": "Quaquaval"}, {"dex": 925, "en": "Maushold"}, {"dex": 934, "en": "Garganacl"}, {"dex": 936, "en": "Armarouge"}, {"dex": 937, "en": "Ceruledge"}, {"dex": 939, "en": "Bellibolt"}, {"dex": 952, "en": "Scovillain"}, {"dex": 956, "en": "Espathra"}, {"dex": 959, "en": "Tinkaton"}, {"dex": 964, "en": "Palafin"}, {"dex": 968, "en": "Orthworm"}, {"dex": 970, "en": "Glimmora"}, {"dex": 972, "en": "Houndstone"}, {"dex": 979, "en": "Annihilape"}, {"dex": 981, "en": "Farigiraf"}, {"dex": 983, "en": "Kingambit"}, {"dex": 1000, "en": "Gholdengo"}, {"dex": 1013, "en": "Sinistcha"}, {"dex": 1018, "en": "Archaludon"}, {"dex": 1019, "en": "Hydrapple"}];
 const megaFormsByBase = {"Venusaur": [{"id": "venusaurmega", "suffix": ""}], "Charizard": [{"id": "charizardmegax", "suffix": "X"}, {"id": "charizardmegay", "suffix": "Y"}], "Blastoise": [{"id": "blastoisemega", "suffix": ""}], "Beedrill": [{"id": "beedrillmega", "suffix": ""}], "Pidgeot": [{"id": "pidgeotmega", "suffix": ""}], "Raichu": [{"id": "raichumegax", "suffix": "X"}, {"id": "raichumegay", "suffix": "Y"}], "Clefable": [{"id": "clefablemega", "suffix": ""}], "Alakazam": [{"id": "alakazammega", "suffix": ""}], "Victreebel": [{"id": "victreebelmega", "suffix": ""}], "Slowbro": [{"id": "slowbromega", "suffix": ""}], "Gengar": [{"id": "gengarmega", "suffix": ""}], "Kangaskhan": [{"id": "kangaskhanmega", "suffix": ""}], "Starmie": [{"id": "starmiemega", "suffix": ""}], "Pinsir": [{"id": "pinsirmega", "suffix": ""}], "Gyarados": [{"id": "gyaradosmega", "suffix": ""}], "Aerodactyl": [{"id": "aerodactylmega", "suffix": ""}], "Dragonite": [{"id": "dragonitemega", "suffix": ""}], "Meganium": [{"id": "meganiummega", "suffix": ""}], "Feraligatr": [{"id": "feraligatrmega", "suffix": ""}], "Ampharos": [{"id": "ampharosmega", "suffix": ""}], "Steelix": [{"id": "steelixmega", "suffix": ""}], "Scizor": [{"id": "scizormega", "suffix": ""}], "Heracross": [{"id": "heracrossmega", "suffix": ""}], "Skarmory": [{"id": "skarmorymega", "suffix": ""}], "Houndoom": [{"id": "houndoommega", "suffix": ""}], "Tyranitar": [{"id": "tyranitarmega", "suffix": ""}], "Sceptile": [{"id": "sceptilemega", "suffix": ""}], "Blaziken": [{"id": "blazikenmega", "suffix": ""}], "Swampert": [{"id": "swampertmega", "suffix": ""}], "Gardevoir": [{"id": "gardevoirmega", "suffix": ""}], "Sableye": [{"id": "sableyemega", "suffix": ""}], "Mawile": [{"id": "mawilemega", "suffix": ""}], "Aggron": [{"id": "aggronmega", "suffix": ""}], "Medicham": [{"id": "medichammega", "suffix": ""}], "Manectric": [{"id": "manectricmega", "suffix": ""}], "Sharpedo": [{"id": "sharpedomega", "suffix": ""}], "Camerupt": [{"id": "cameruptmega", "suffix": ""}], "Altaria": [{"id": "altariamega", "suffix": ""}], "Banette": [{"id": "banettemega", "suffix": ""}], "Chimecho": [{"id": "chimechomega", "suffix": ""}], "Absol": [{"id": "absolmega", "suffix": ""}], "Glalie": [{"id": "glaliemega", "suffix": ""}], "Metagross": [{"id": "metagrossmega", "suffix": ""}], "Staraptor": [{"id": "staraptormega", "suffix": ""}], "Lopunny": [{"id": "lopunnymega", "suffix": ""}], "Garchomp": [{"id": "garchompmega", "suffix": ""}], "Lucario": [{"id": "lucariomega", "suffix": ""}], "Abomasnow": [{"id": "abomasnowmega", "suffix": ""}], "Gallade": [{"id": "gallademega", "suffix": ""}], "Froslass": [{"id": "froslassmega", "suffix": ""}], "Emboar": [{"id": "emboarmega", "suffix": ""}], "Excadrill": [{"id": "excadrillmega", "suffix": ""}], "Audino": [{"id": "audinomega", "suffix": ""}], "Scolipede": [{"id": "scolipedemega", "suffix": ""}], "Scrafty": [{"id": "scraftymega", "suffix": ""}], "Eelektross": [{"id": "eelektrossmega", "suffix": ""}], "Chandelure": [{"id": "chandeluremega", "suffix": ""}], "Chesnaught": [{"id": "chesnaughtmega", "suffix": ""}], "Delphox": [{"id": "delphoxmega", "suffix": ""}], "Greninja": [{"id": "greninjamega", "suffix": ""}], "Pyroar": [{"id": "pyroarmega", "suffix": ""}], "Floette": [{"id": "floettemega", "suffix": ""}], "Meowstic": [{"id": "meowsticmmega", "suffix": ""}], "Malamar": [{"id": "malamarmega", "suffix": ""}], "Barbaracle": [{"id": "barbaraclemega", "suffix": ""}], "Dragalge": [{"id": "dragalgemega", "suffix": ""}], "Hawlucha": [{"id": "hawluchamega", "suffix": ""}], "Crabominable": [{"id": "crabominablemega", "suffix": ""}], "Drampa": [{"id": "drampamega", "suffix": ""}], "Falinks": [{"id": "falinksmega", "suffix": ""}], "Scovillain": [{"id": "scovillainmega", "suffix": ""}], "Glimmora": [{"id": "glimmoramega", "suffix": ""}]};
 
+
+const MEGA_STONE_BY_FORM = {"venusaurmega":{"itemId":"venusaurite","name":"Venusaurite"},"charizardmegax":{"itemId":"charizarditex","name":"Charizardite X"},"charizardmegay":{"itemId":"charizarditey","name":"Charizardite Y"},"blastoisemega":{"itemId":"blastoisinite","name":"Blastoisinite"},"beedrillmega":{"itemId":"beedrillite","name":"Beedrillite"},"pidgeotmega":{"itemId":"pidgeotite","name":"Pidgeotite"},"raichumegax":{"itemId":"raichunitex","name":"Raichunite X"},"raichumegay":{"itemId":"raichunitey","name":"Raichunite Y"},"clefablemega":{"itemId":"clefablite","name":"Clefablite"},"alakazammega":{"itemId":"alakazite","name":"Alakazite"},"victreebelmega":{"itemId":"victreebelite","name":"Victreebelite"},"slowbromega":{"itemId":"slowbronite","name":"Slowbronite"},"gengarmega":{"itemId":"gengarite","name":"Gengarite"},"kangaskhanmega":{"itemId":"kangaskhanite","name":"Kangaskhanite"},"starmiemega":{"itemId":"starminite","name":"Starminite"},"pinsirmega":{"itemId":"pinsirite","name":"Pinsirite"},"gyaradosmega":{"itemId":"gyaradosite","name":"Gyaradosite"},"aerodactylmega":{"itemId":"aerodactylite","name":"Aerodactylite"},"dragonitemega":{"itemId":"dragoninite","name":"Dragoninite"},"meganiummega":{"itemId":"meganiumite","name":"Meganiumite"},"feraligatrmega":{"itemId":"feraligite","name":"Feraligite"},"ampharosmega":{"itemId":"ampharosite","name":"Ampharosite"},"steelixmega":{"itemId":"steelixite","name":"Steelixite"},"scizormega":{"itemId":"scizorite","name":"Scizorite"},"heracrossmega":{"itemId":"heracronite","name":"Heracronite"},"skarmorymega":{"itemId":"skarmorite","name":"Skarmorite"},"houndoommega":{"itemId":"houndoominite","name":"Houndoominite"},"tyranitarmega":{"itemId":"tyranitarite","name":"Tyranitarite"},"sceptilemega":{"itemId":"sceptilite","name":"Sceptilite"},"blazikenmega":{"itemId":"blazikenite","name":"Blazikenite"},"swampertmega":{"itemId":"swampertite","name":"Swampertite"},"gardevoirmega":{"itemId":"gardevoirite","name":"Gardevoirite"},"sableyemega":{"itemId":"sablenite","name":"Sablenite"},"mawilemega":{"itemId":"mawilite","name":"Mawilite"},"aggronmega":{"itemId":"aggronite","name":"Aggronite"},"medichammega":{"itemId":"medichamite","name":"Medichamite"},"manectricmega":{"itemId":"manectite","name":"Manectite"},"sharpedomega":{"itemId":"sharpedonite","name":"Sharpedonite"},"cameruptmega":{"itemId":"cameruptite","name":"Cameruptite"},"altariamega":{"itemId":"altarianite","name":"Altarianite"},"banettemega":{"itemId":"banettite","name":"Banettite"},"chimechomega":{"itemId":"chimechite","name":"Chimechite"},"absolmega":{"itemId":"absolite","name":"Absolite"},"glaliemega":{"itemId":"glalitite","name":"Glalitite"},"metagrossmega":{"itemId":"metagrossite","name":"Metagrossite"},"staraptormega":{"itemId":"staraptite","name":"Staraptite"},"lopunnymega":{"itemId":"lopunnite","name":"Lopunnite"},"garchompmega":{"itemId":"garchompite","name":"Garchompite"},"lucariomega":{"itemId":"lucarionite","name":"Lucarionite"},"abomasnowmega":{"itemId":"abomasite","name":"Abomasite"},"gallademega":{"itemId":"galladite","name":"Galladite"},"froslassmega":{"itemId":"froslassite","name":"Froslassite"},"emboarmega":{"itemId":"emboarite","name":"Emboarite"},"excadrillmega":{"itemId":"excadrite","name":"Excadrite"},"audinomega":{"itemId":"audinite","name":"Audinite"},"scolipedemega":{"itemId":"scolipite","name":"Scolipite"},"scraftymega":{"itemId":"scraftinite","name":"Scraftinite"},"eelektrossmega":{"itemId":"eelektrossite","name":"Eelektrossite"},"chandeluremega":{"itemId":"chandelurite","name":"Chandelurite"},"chesnaughtmega":{"itemId":"chesnaughtite","name":"Chesnaughtite"},"delphoxmega":{"itemId":"delphoxite","name":"Delphoxite"},"greninjamega":{"itemId":"greninjite","name":"Greninjite"},"pyroarmega":{"itemId":"pyroarite","name":"Pyroarite"},"floettemega":{"itemId":"floettite","name":"Floettite"},"meowsticmmega":{"itemId":"meowsticite","name":"Meowsticite"},"malamarmega":{"itemId":"malamarite","name":"Malamarite"},"barbaraclemega":{"itemId":"barbaracite","name":"Barbaracite"},"dragalgemega":{"itemId":"dragalgite","name":"Dragalgite"},"hawluchamega":{"itemId":"hawluchanite","name":"Hawluchanite"},"crabominablemega":{"itemId":"crabominite","name":"Crabominite"},"drampamega":{"itemId":"drampanite","name":"Drampanite"},"falinksmega":{"itemId":"falinksite","name":"Falinksite"},"scovillainmega":{"itemId":"scovillainite","name":"Scovillainite"},"glimmoramega":{"itemId":"glimmoranite","name":"Glimmoranite"}};
+
+function megaStoneInfoForForm(formId){
+  return MEGA_STONE_BY_FORM[formId] || null;
+}
+
+const megaBaseByFormId = Object.fromEntries(
+  Object.entries(megaFormsByBase).flatMap(([base, forms]) =>
+    forms.map(form => [form.id, base])
+  )
+);
+
+function isMegaFormForBase(baseName, formId){
+  return megaBaseByFormId[formId] === baseName;
+}
+
 const manualKorean = {"908": "마스카나", "911": "라우드본", "914": "웨이니발", "925": "파밀리쥐", "934": "콜로솔트", "936": "카디나르마", "937": "파라블레이즈", "939": "찌리배리", "952": "스코빌런", "956": "클레스퍼트라", "959": "두드리짱", "964": "돌핀맨", "968": "꿈트렁", "970": "킬라플로르", "972": "묘두기", "979": "저승갓숭", "981": "키키링", "983": "대도각참", "1000": "타부자고", "1013": "그우린차", "1018": "브리두라스", "1019": "과미드라"};
 
 const natures = [
@@ -5053,6 +4905,13 @@ const koreanMoveNames = {};
 const koreanAbilityNames = {};
 const koreanItemNames = {};
 const championsItemData = {};
+const DATA_DIAGNOSTICS = [];
+function reportDataIssue(scope,error){
+  const message=error?.message||String(error||'unknown error');
+  DATA_DIAGNOSTICS.push({scope,message,time:Date.now()});
+  if(DATA_DIAGNOSTICS.length>30)DATA_DIAGNOSTICS.shift();
+  console.warn(`[Pokémon Stat Lab][${scope}] ${message}`);
+}
 let championsItemsReady = false;
 let moveReady = false;
 
@@ -5286,30 +5145,48 @@ function championsItemCategory(id,item){
   return '기타 / 보조';
 }
 
+function appendRequiredMegaStoneOption(sel,formId){
+  const info=megaStoneInfoForForm(formId);
+  if(!info || Array.from(sel.options).some(o=>o.value===info.itemId))return;
+  const og=document.createElement('optgroup');
+  og.label='메가스톤';
+  const o=document.createElement('option');
+  o.value=info.itemId;
+  o.textContent=`${info.name} · 메가진화 자동 연동`;
+  og.appendChild(o);
+  sel.appendChild(og);
+}
+
 function populateSampleHeldItemSelect(filter=''){
   const sel=document.getElementById('heldItem');
   if(!sel)return;
+  const current=sel.value||'none';
+  const selectedMegaForm=pokemonFormSelect?.value && pokemonFormSelect.value!=='base'
+    ? pokemonFormSelect.value : null;
+
   if(!championsItemsReady){
-    populateHeldItemSelect('heldItem',SAMPLE_ITEM_GROUPS,sel.value||'none');
+    populateHeldItemSelect('heldItem',SAMPLE_ITEM_GROUPS,current);
+    if(selectedMegaForm)appendRequiredMegaStoneOption(sel,selectedMegaForm);
+    if(Array.from(sel.options).some(o=>o.value===current))sel.value=current;
     const count=document.getElementById('sampleItemCount');
     if(count)count.textContent='기본 목록';
     return;
   }
 
-  const current=sel.value||'none';
   const q=normalizeSearchText(filter);
   const groups=new Map();
+  const requiredInfo=selectedMegaForm ? megaStoneInfoForForm(selectedMegaForm) : null;
   const items=Object.values(championsItemData)
     .filter(item=>item.id!=='none')
     .filter(item=>{
+      if(requiredInfo && item.id===requiredInfo.itemId)return true;
       if(!q)return true;
-      const candidates=[
+      return [
         item.name||'', item.id||'', itemKoreanName(item.id),
         item.shortDesc||'', item.desc||''
-      ].map(normalizeSearchText);
-      return candidates.some(v=>v.includes(q));
+      ].map(normalizeSearchText).some(v=>v.includes(q));
     })
-    .sort((a,b)=>championsItemDisplayName(a.id).localeCompare(championsItemDisplayName(b.id),'ko'));
+    .sort((x,y)=>championsItemDisplayName(x.id).localeCompare(championsItemDisplayName(y.id),'ko'));
 
   items.forEach(item=>{
     const cat=championsItemCategory(item.id,item);
@@ -5330,13 +5207,13 @@ function populateSampleHeldItemSelect(filter=''){
     list.forEach(item=>{
       const o=document.createElement('option');
       o.value=item.id;
-      const scope=itemAutoScopeText(item.id);
-      o.textContent=`${championsItemDisplayName(item.id)} · ${scope}`;
+      o.textContent=`${championsItemDisplayName(item.id)} · ${itemAutoScopeText(item.id)}`;
       og.appendChild(o);
     });
     sel.appendChild(og);
   });
 
+  if(selectedMegaForm)appendRequiredMegaStoneOption(sel,selectedMegaForm);
   if(Array.from(sel.options).some(o=>o.value===current))sel.value=current;
   else sel.value='none';
 
@@ -5378,7 +5255,7 @@ async function loadItemKoreanNames(){
     populateSampleHeldItemSelect(document.getElementById('sampleItemSearch')?.value||'');
     populateOffenseTargetItemOptions();
     renderOwnItemNote();
-  }catch(e){}
+  }catch(e){ reportDataIssue('item-korean',e); }
 }
 
 async function loadChampionsItems(){
@@ -5413,6 +5290,7 @@ async function loadChampionsItems(){
     syncHeldItemWithMegaForm(false);
     render();
   }catch(e){
+    reportDataIssue('champions-items',e);
     championsItemsReady=false;
     populateSampleHeldItemSelect('');
     populateOffenseTargetItemOptions();
@@ -5458,93 +5336,26 @@ function syncMegaFormFromHeldItem(){
 }
 
 function megaStoneHeuristicIds(baseName,formId){
-  const base=toID(baseName);
-  const form=toID(formId);
-  const candidates=[];
-
-  if(base==='charizard'){
-    if(form.includes('megax'))candidates.push('charizarditex');
-    if(form.includes('megay'))candidates.push('charizarditey');
-  }else if(base==='mewtwo'){
-    if(form.includes('megax'))candidates.push('mewtwonitex');
-    if(form.includes('megay'))candidates.push('mewtwonitey');
-  }else{
-    const special={
-      venusaur:'venusaurite',
-      blastoise:'blastoisinite',
-      beedrill:'beedrillite',
-      pidgeot:'pidgeotite',
-      alakazam:'alakazite',
-      slowbro:'slowbronite',
-      gengar:'gengarite',
-      kangaskhan:'kangaskhanite',
-      pinsir:'pinsirite',
-      gyarados:'gyaradosite',
-      aerodactyl:'aerodactylite',
-      ampharos:'ampharosite',
-      steelix:'steelixite',
-      scizor:'scizorite',
-      heracross:'heracronite',
-      houndoom:'houndoominite',
-      tyranitar:'tyranitarite',
-      sceptile:'sceptilite',
-      blaziken:'blazikenite',
-      swampert:'swampertite',
-      gardevoir:'gardevoirite',
-      sableye:'sablenite',
-      mawile:'mawilite',
-      aggron:'aggronite',
-      medicham:'medichamite',
-      manectric:'manectite',
-      sharpedo:'sharpedonite',
-      camerupt:'cameruptite',
-      altaria:'altarianite',
-      banette:'banettite',
-      absol:'absolite',
-      glalie:'glalitite',
-      salamence:'salamencite',
-      metagross:'metagrossite',
-      latias:'latiasite',
-      latios:'latiosite',
-      lopunny:'lopunnite',
-      garchomp:'garchompite',
-      lucario:'lucarionite',
-      abomasnow:'abomasite',
-      gallade:'galladite',
-      audino:'audinite',
-      diancie:'diancite'
-    };
-    if(special[base])candidates.push(special[base]);
-    candidates.push(`${base}ite`);
-  }
-  return [...new Set(candidates)];
+  const info=megaStoneInfoForForm(formId);
+  return info ? [info.itemId] : [];
 }
 
 function findMegaStoneForCurrentForm(){
   if(pokemonFormSelect.value==='base')return null;
-
   const base=currentBasePokemonName();
-  const formName=dexData[pokemonFormSelect.value]?.name||pokemonFormSelect.value;
-  const target=toID(formName);
+  const formId=pokemonFormSelect.value;
+  if(!isMegaFormForBase(base,formId))return null;
 
-  if(championsItemsReady){
-    const mappedStone=Object.values(championsItemData).find(item=>{
-      if(!item.megaStone)return false;
-      const mapped=megaTargetForItem(item,base);
-      return mapped && toID(mapped)===target;
-    });
-    if(mappedStone)return mappedStone;
-  }
+  const explicit=megaStoneInfoForForm(formId);
+  if(!explicit)return null;
+  if(championsItemData[explicit.itemId])return championsItemData[explicit.itemId];
 
-  // Fallback for cases where Champions item metadata has not loaded yet.
-  for(const id of megaStoneHeuristicIds(base,pokemonFormSelect.value)){
-    if(championsItemData[id])return championsItemData[id];
-    for(const group of ALL_ITEM_GROUPS){
-      const entry=group.items.find(([itemId])=>itemId===id);
-      if(entry)return {id,name:entry[1],megaStone:formName};
-    }
-  }
-  return null;
+  return {
+    id:explicit.itemId,
+    name:explicit.name,
+    megaStone:dexData[formId]?.name||formId,
+    isNonstandard:null
+  };
 }
 
 function syncHeldItemWithMegaForm(clearSearch=true){
@@ -5678,7 +5489,7 @@ function megaDisplayName(baseEn, form) {
 
 function updateFormOptions(reset=true) {
   const baseEn = pokemonSelect.value;
-  const forms = megaFormsFor(baseEn);
+  const forms = megaFormsFor(baseEn).filter(form => isMegaFormForBase(baseEn, form.id));
   const previous = reset ? "base" : pokemonFormSelect.value;
   pokemonFormSelect.innerHTML = '<option value="base">기본</option>';
 
@@ -5709,18 +5520,21 @@ function updateFormOptions(reset=true) {
 }
 
 function selectedFormId() {
-  return pokemonFormSelect && pokemonFormSelect.value !== 'base'
-    ? pokemonFormSelect.value
-    : toID(pokemonSelect.value);
+  const base = pokemonSelect?.value || '';
+  const selected = pokemonFormSelect?.value || 'base';
+  if (selected !== 'base' && isMegaFormForBase(base, selected)) return selected;
+  return toID(base);
 }
 
 function currentFormLabel() {
-  if (!pokemonFormSelect || pokemonFormSelect.value === 'base') {
+  const base = pokemonSelect?.value || '';
+  const selected = pokemonFormSelect?.value || 'base';
+  if (!pokemonFormSelect || selected === 'base' || !isMegaFormForBase(base, selected)) {
     const item = rosterItemByEn(pokemonSelect.value);
     return item ? (koreanNames[item.dex] || item.en) : pokemonSelect.value;
   }
-  const form = megaFormsFor(pokemonSelect.value).find(f=>f.id===pokemonFormSelect.value);
-  return form ? megaDisplayName(pokemonSelect.value, form) : pokemonSelect.value;
+  const form = megaFormsFor(base).find(f=>f.id===selected);
+  return form ? megaDisplayName(base, form) : base;
 }
 
 function pointJumpInfo(statKey, base) {
@@ -5798,22 +5612,25 @@ function displayName(item) {
 }
 
 function populatePokemonOptions(filter="") {
-  const current = pokemonSelect.value;
-  const q = filter.trim().toLowerCase();
-  pokemonSelect.innerHTML = "";
-  const list = championsRoster.filter(item => {
-    const ko = koreanNames[item.dex] || "";
-    return !q || item.en.toLowerCase().includes(q) || ko.includes(filter.trim());
+  const current=pokemonSelect.value;
+  const raw=filter.trim();
+  const q=raw.toLowerCase();
+  const list=championsRoster.filter(item=>{
+    const ko=koreanNames[item.dex]||"";
+    return !q || item.en.toLowerCase().includes(q) || ko.includes(raw);
   });
-  list.forEach(item => {
-    const opt = document.createElement("option");
-    opt.value = item.en;
-    opt.textContent = displayName(item);
+
+  pokemonSelect.innerHTML="";
+  list.forEach(item=>{
+    const opt=document.createElement("option");
+    opt.value=item.en;
+    opt.textContent=displayName(item);
     pokemonSelect.appendChild(opt);
   });
-  if (list.some(x => x.en === current)) pokemonSelect.value = current;
-  else if (list.some(x => x.en === "Garchomp")) pokemonSelect.value = "Garchomp";
-  if (pokemonSelect.options.length) render();
+
+  if(list.some(x=>x.en===current))pokemonSelect.value=current;
+  else if(raw)pokemonSelect.selectedIndex=-1;
+  else if(list.length)pokemonSelect.value=list[0].en;
 }
 
 natures.forEach((n, i) => {
@@ -6027,7 +5844,7 @@ async function loadAbilityKoreanNames(){
       if(identifier&&name)koreanAbilityNames[toID(identifier)]=name;
     });
     populateSampleAbility();
-  }catch(e){}
+  }catch(e){ reportDataIssue('ability-korean',e); }
 }
 
 
@@ -8509,6 +8326,10 @@ function renderSpeedPanel() {
   rows.forEach(r=>{
     const btn=document.createElement('button'); btn.type='button';
     btn.className='speed-row'+(r.mine?' mine':'');
+    if(!r.mine){
+      btn.dataset.entityId=r.entity.id||'';
+      btn.dataset.benchmarkType=r.type||'';
+    }
     if(selectedBenchmark && !r.mine &&
        selectedBenchmark.entity.id===r.entity.id && selectedBenchmark.type===r.type) {
       btn.classList.add('selected');
@@ -8601,26 +8422,56 @@ async function loadKoreanNames(){
   renderSpeedPanel();
 }
 
+function pokeApiDexEntry(data,fallbackName=''){
+  const bs={};
+  (data.stats||[]).forEach(s=>{
+    const map={'hp':'hp','attack':'atk','defense':'def','special-attack':'spa','special-defense':'spd','speed':'spe'};
+    const key=map[s.stat?.name];
+    if(key)bs[key]=s.base_stat;
+  });
+  if(Object.keys(bs).length!==6)return null;
+  return {
+    name:data.name||fallbackName,
+    baseStats:bs,
+    types:(data.types||[]).map(x=>{
+      const n=x.type?.name||'';
+      return n?n[0].toUpperCase()+n.slice(1):'';
+    }).filter(Boolean),
+    abilities:(data.abilities||[]).map(x=>x.ability?.name||'').filter(Boolean)
+  };
+}
+
+function pokeApiMegaSlug(formId){
+  const specials={meowsticmmega:'meowstic-male-mega',floettemega:'floette-eternal-mega'};
+  if(specials[formId])return specials[formId];
+  if(formId.endsWith('megax'))return `${formId.slice(0,-5)}-mega-x`;
+  if(formId.endsWith('megay'))return `${formId.slice(0,-5)}-mega-y`;
+  if(formId.endsWith('mega'))return `${formId.slice(0,-4)}-mega`;
+  return formId;
+}
+
 async function loadDexData(){
   const status=document.getElementById('speedStatus');
+  let showdownLoaded=false;
+
   try{
     const res=await fetch('https://play.pokemonshowdown.com/data/pokedex.json');
     if(!res.ok)throw new Error('showdown fetch failed');
     const all=await res.json();
+
     championsRoster.forEach(item=>{
-      const d=all[toID(item.en)]; if(d&&d.baseStats)dexData[toID(item.en)]={
+      const d=all[toID(item.en)];
+      if(d&&d.baseStats)dexData[toID(item.en)]={
         name:d.name||item.en,baseStats:d.baseStats,types:d.types||[],
         abilities:[...new Set(Object.values(d.abilities||{}))]
       };
     });
-    Object.entries(megaFormsByBase).forEach(([baseEn, forms])=>{
+
+    Object.entries(megaFormsByBase).forEach(([baseEn,forms])=>{
       forms.forEach(form=>{
-        // Most forms use their direct Showdown id. Meowstic has had naming changes,
-        // so a small candidate list keeps the page resilient.
-        const candidates = form.id === 'meowsticmmega'
-          ? ['meowsticmmega','meowsticmega','meowsticfmega']
-          : [form.id];
-        const foundId = candidates.find(id=>all[id] && all[id].baseStats);
+        const candidates=form.id==='meowsticmmega'
+          ? ['meowsticmmega','meowsticmega','meowsticfmega']:[form.id];
+        const foundId=candidates.find(id=>all[id]&&all[id].baseStats);
         if(foundId){
           const d=all[foundId];
           dexData[form.id]={
@@ -8630,24 +8481,42 @@ async function loadDexData(){
         }
       });
     });
+    showdownLoaded=true;
   }catch(e){
+    reportDataIssue('dex-showdown',e);
+  }
+
+  if(!showdownLoaded){
     status.textContent='기본 데이터 연결 재시도 중…';
-    const batchSize=12;
-    for(let i=0;i<championsRoster.length;i+=batchSize){
-      const batch=championsRoster.slice(i,i+batchSize);
+
+    for(let i=0;i<championsRoster.length;i+=12){
+      const batch=championsRoster.slice(i,i+12);
       await Promise.allSettled(batch.map(async item=>{
-        const slug=item.en.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-        const res=await fetch(`https://pokeapi.co/api/v2/pokemon/${slug}`); if(!res.ok)return;
-        const data=await res.json(); const bs={};
-        data.stats.forEach(s=>{const map={'hp':'hp','attack':'atk','defense':'def','special-attack':'spa','special-defense':'spd','speed':'spe'};bs[map[s.stat.name]]=s.base_stat;});
-        if(Object.keys(bs).length===6)dexData[toID(item.en)]={
-          name:item.en,baseStats:bs,
-          types:(data.types||[]).map(x=>x.type.name[0].toUpperCase()+x.type.name.slice(1)),
-          abilities:(data.abilities||[]).map(x=>x.ability?.name||'').filter(Boolean)
-        };
+        try{
+          const slug=item.en.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+          const res=await fetch(`https://pokeapi.co/api/v2/pokemon/${slug}`);
+          if(!res.ok)return;
+          const entry=pokeApiDexEntry(await res.json(),item.en);
+          if(entry)dexData[toID(item.en)]=entry;
+        }catch(e){ reportDataIssue(`dex-base-${item.en}`,e); }
+      }));
+    }
+
+    const forms=Object.values(megaFormsByBase).flat();
+    for(let i=0;i<forms.length;i+=10){
+      const batch=forms.slice(i,i+10);
+      await Promise.allSettled(batch.map(async form=>{
+        if(dexData[form.id])return;
+        try{
+          const res=await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeApiMegaSlug(form.id)}`);
+          if(!res.ok)return;
+          const entry=pokeApiDexEntry(await res.json(),form.id);
+          if(entry)dexData[form.id]=entry;
+        }catch(e){ reportDataIssue(`dex-mega-${form.id}`,e); }
       }));
     }
   }
+
   dexReady=true;
   const loaded=championsRoster.filter(x=>dexData[toID(x.en)]).length;
   const megaLoaded=Object.values(megaFormsByBase).flat().filter(f=>dexData[f.id]).length;
@@ -8747,7 +8616,7 @@ async function loadMoveData(){
           if(moveData[m[1]])moveData[m[1]].basePower=Number(m[2]);
         }
       }
-    }catch(e){}
+    }catch(e){ reportDataIssue('champions-move-overrides',e); }
 
     moveReady=true;
     populateAttackMoveOptions('');
@@ -8755,6 +8624,7 @@ async function loadMoveData(){
     populateSampleMoveOptions();
     renderPartyAnalysis();
   }catch(e){
+    reportDataIssue('move-data',e);
     sel.innerHTML='<option value="">기술 데이터를 불러오지 못했습니다.</option>';
   }
 }
@@ -8838,6 +8708,10 @@ pokemonSelect.addEventListener('change',()=>{
   render();
 });
 pokemonFormSelect.addEventListener('change',()=>{
+  const base=pokemonSelect.value;
+  if(pokemonFormSelect.value!=='base' && !isMegaFormForBase(base,pokemonFormSelect.value)){
+    pokemonFormSelect.value='base';
+  }
   syncHeldItemWithMegaForm(true);
   selectedBenchmark=null;
   resetSpeedTarget();
@@ -9242,415 +9116,175 @@ render();
 })();
 </script><script>
 (() => {
-  const CURRENT_APP_VERSION = 'v17.8';
-  const INSTALL_DISMISS_KEY = 'pokemonChampionsStatLab.installPromptDismissed.v1';
-  const $ = id => document.getElementById(id);
-
-  const ui = {
-    installBtn: $('pwaInstallBtn'),
-    pwaStatus: $('pwaStatus'),
-    version: $('appVersionStatus'),
-    updateStatus: $('appUpdateStatus'),
-    updateBtn: $('applyAppUpdate'),
-    mobileVersion: $('mobileVersionStatus'),
-    mobileUpdateStatus: $('mobileUpdateStatus'),
-    mobileUpdateBtn: $('mobileApplyUpdate'),
-    smartInstallBar: $('smartInstallBar'),
-    smartInstallTitle: $('smartInstallTitle'),
-    smartInstallHint: $('smartInstallHint'),
-    smartInstallAction: $('smartInstallAction'),
-    smartInstallDismiss: $('smartInstallDismiss'),
-    installGuideModal: $('installGuideModal'),
-    installGuideTitle: $('installGuideTitle'),
-    installGuideBody: $('installGuideBody'),
-    installGuideClose: $('installGuideClose')
+  const CURRENT_APP_VERSION='v18.1';
+  const INSTALL_DISMISS_KEY='pokemonChampionsStatLab.installPromptDismissed.v1';
+  const $=id=>document.getElementById(id);
+  const ui={
+    installBtn:$('pwaInstallBtn'),pwaStatus:$('pwaStatus'),version:$('appVersionStatus'),
+    updateStatus:$('appUpdateStatus'),updateBtn:$('applyAppUpdate'),
+    mobileVersion:$('mobileVersionStatus'),mobileUpdateStatus:$('mobileUpdateStatus'),
+    mobileUpdateBtn:$('mobileApplyUpdate'),installBar:$('smartInstallBar'),
+    installTitle:$('smartInstallTitle'),installHint:$('smartInstallHint'),
+    installAction:$('smartInstallAction'),installDismiss:$('smartInstallDismiss'),
+    guide:$('installGuideModal'),guideTitle:$('installGuideTitle'),
+    guideBody:$('installGuideBody'),guideClose:$('installGuideClose')
   };
 
-  let deferredPrompt = null;
-  let registrationRef = null;
-  let waitingWorker = null;
-  let serverVersion = null;
-  let refreshing = false;
-  let applyingUpdate = false;
+  const isMobile=/android|iphone|ipad|ipod/i.test(navigator.userAgent||'') ||
+    window.matchMedia?.('(max-width:720px)').matches;
+  const isStandalone=window.matchMedia?.('(display-mode: standalone)').matches ||
+    navigator.standalone===true;
 
-  const env = (() => {
-    const ua = navigator.userAgent || '';
-    const isIOS = /iphone|ipad|ipod/i.test(ua);
-    const isAndroid = /android/i.test(ua);
-    const isSamsung = /samsungbrowser/i.test(ua);
-    const isKakao = /kakaotalk|kakao/i.test(ua);
-    const isEdge = /edg\//i.test(ua);
-    const isChrome = /chrome|crios/i.test(ua) && !isEdge && !isSamsung && !isKakao;
-    const isDesktop = !isIOS && !isAndroid;
-    const isStandalone =
-      window.matchMedia?.('(display-mode: standalone)').matches ||
-      window.navigator.standalone === true;
-    return {isIOS,isAndroid,isSamsung,isKakao,isEdge,isChrome,isDesktop,isStandalone};
-  })();
+  let deferredPrompt=null,registrationRef=null,waitingWorker=null,serverVersion=null;
+  let refreshing=false,applyingUpdate=false;
 
-  function setText(el, text) {
-    if (el) el.textContent = text;
+  const setText=(el,text)=>{if(el)el.textContent=text;};
+  const hideInstallBar=()=>{if(ui.installBar)ui.installBar.hidden=true;};
+
+  function setPwaStatus(text,ready=false){
+    setText(ui.pwaStatus,text);
+    ui.pwaStatus?.classList.toggle('ready',!!ready);
   }
-
-  function setPwaStatus(text, ready=false) {
-    setText(ui.pwaStatus, text);
-    ui.pwaStatus?.classList.toggle('ready', !!ready);
-  }
-
-  function setUpdateStatus(text, ready=false) {
-    [ui.updateStatus, ui.mobileUpdateStatus].forEach(el => {
-      if (!el) return;
-      el.textContent = text;
-      el.classList.toggle('update-ready', !!ready);
+  function setUpdateStatus(text,ready=false){
+    [ui.updateStatus,ui.mobileUpdateStatus].forEach(el=>{
+      if(!el)return; el.textContent=text; el.classList.toggle('update-ready',!!ready);
     });
-    [ui.updateBtn, ui.mobileUpdateBtn].forEach(btn => {
-      if (!btn) return;
-      btn.hidden = !ready;
-      if (!ready) btn.disabled = false;
+    [ui.updateBtn,ui.mobileUpdateBtn].forEach(btn=>{
+      if(!btn)return; btn.hidden=!ready; if(!ready)btn.disabled=false;
     });
   }
 
-  function installPromptDismissed() {
-    // Mobile install CTA must remain visible until the PWA is actually installed.
-    if (env.isAndroid || env.isIOS) return false;
-    return localStorage.getItem(INSTALL_DISMISS_KEY) === '1';
+  function refreshInstallUi(){
+    if(isMobile||isStandalone||localStorage.getItem(INSTALL_DISMISS_KEY)==='1'){
+      hideInstallBar(); setPwaStatus(isStandalone?'앱 실행 중':'웹 실행',isStandalone); return;
+    }
+    if(!ui.installBar)return;
+    setText(ui.installTitle,'앱 설치');
+    setText(ui.installHint,deferredPrompt
+      ? '버튼을 누르면 브라우저의 PWA 설치창이 열립니다.'
+      : 'Chrome/Edge의 앱 설치 기능을 사용할 수 있습니다.');
+    setText(ui.installAction,deferredPrompt?'앱으로 설치':'설치 방법');
+    ui.installBar.hidden=false;
+    setPwaStatus(deferredPrompt?'설치 가능':'웹 실행',!!deferredPrompt);
   }
 
-  function hideSmartInstall(persist=false) {
-    if (ui.smartInstallBar) ui.smartInstallBar.hidden = true;
-    if (persist && !(env.isAndroid || env.isIOS)) {
-      localStorage.setItem(INSTALL_DISMISS_KEY, '1');
-    }
+  function showInstallGuide(){
+    if(!ui.guide||!ui.guideBody)return;
+    setText(ui.guideTitle,'PC에서 앱으로 설치');
+    ui.guideBody.innerHTML=`
+      <p>Chrome/Edge에서 이 웹을 별도 앱처럼 설치할 수 있습니다.</p>
+      <ol><li>주소창 오른쪽의 <b>설치 아이콘</b>을 누르거나</li>
+      <li>브라우저 메뉴에서 <b>앱 설치</b>를 선택합니다.</li></ol>`;
+    ui.guide.hidden=false;
   }
 
-  function showSmartInstall(title, hint, actionLabel) {
-    if (!ui.smartInstallBar || env.isStandalone || installPromptDismissed()) return;
-    setText(ui.smartInstallTitle, title);
-    setText(ui.smartInstallHint, hint);
-    setText(ui.smartInstallAction, actionLabel);
-    ui.smartInstallBar.hidden = false;
+  async function triggerInstall(){
+    if(isMobile||isStandalone)return;
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      try{await deferredPrompt.userChoice;}catch(_){}
+      deferredPrompt=null; refreshInstallUi(); return;
+    }
+    showInstallGuide();
   }
 
+  async function fetchServerVersion(){
+    if(!/^https?:$/.test(location.protocol))return null;
+    try{
+      const response=await fetch('./app-version.json',{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+      if(!response.ok)throw new Error('version fetch failed');
+      const data=await response.json();
+      return String(data?.version||'').trim()||null;
+    }catch(_){return null;}
+  }
+  const versionsDiffer=()=>!!serverVersion&&serverVersion!==CURRENT_APP_VERSION;
 
-  function openCurrentPageInChrome() {
-    if (!env.isAndroid) {
-      showInstallGuide();
-      return;
-    }
-
-    const current = new URL(location.href);
-    current.hash = '';
-
-    // Android intent hands the current HTTPS page to Chrome.
-    // The browser/OS still requires the user to approve the actual PWA install.
-    const intentPath = `${current.host}${current.pathname}${current.search}`;
-    const fallback = encodeURIComponent(current.href);
-    const intentUrl =
-      `intent://${intentPath}#Intent;scheme=https;package=com.android.chrome;` +
-      `S.browser_fallback_url=${fallback};end`;
-
-    location.href = intentUrl;
-
-    // If the in-app browser blocks intents, show a useful fallback instead
-    // of appearing to do nothing.
-    window.setTimeout(() => {
-      if (!document.hidden) showInstallGuide();
-    }, 900);
+  async function refreshServerVersionStatus(){
+    const latest=await fetchServerVersion();
+    if(!latest){setUpdateStatus('최신 버전 확인 실패',false);return;}
+    serverVersion=latest;
+    setUpdateStatus(versionsDiffer()?`새 버전 ${serverVersion} 있음`:`최신 ${CURRENT_APP_VERSION} 사용 중`,versionsDiffer());
   }
 
-  function showInstallGuide() {
-    if (!ui.installGuideModal || !ui.installGuideBody) return;
-
-    let title='앱 설치 방법';
-    let body='';
-
-    if (env.isIOS) {
-      title='홈 화면에 추가';
-      body=`
-        <p>iPhone/iPad에서는 웹페이지가 설치창을 직접 띄울 수 없습니다.</p>
-        <ol>
-          <li>Safari의 <b>공유</b> 버튼을 누릅니다.</li>
-          <li><b>홈 화면에 추가</b>를 선택합니다.</li>
-          <li>오른쪽 위 <b>추가</b>를 누릅니다.</li>
-        </ol>`;
-    } else if (env.isKakao) {
-      title='Chrome에서 열어 설치';
-      body=`
-        <p>카카오톡 안에서 열린 브라우저는 PWA 설치창을 직접 띄울 수 없습니다.</p>
-        <ol>
-          <li>이 창을 닫고 <b>Chrome에서 열기</b>를 누릅니다.</li>
-          <li>Chrome으로 열린 뒤 웹의 <b>지금 설치</b> 버튼을 누릅니다.</li>
-          <li>Android 설치 확인창에서 <b>설치</b>를 선택합니다.</li>
-        </ol>`;
-    } else if (env.isSamsung) {
-      title='삼성 인터넷에서 홈 화면에 설치';
-      body=`
-        <p>현재 브라우저는 웹페이지의 자동 설치창을 제공하지 않아 메뉴에서 설치해야 합니다.</p>
-        <ol>
-          <li>화면 아래 또는 위의 <b>≡ / ⋮ 메뉴</b>를 누릅니다.</li>
-          <li><b>페이지 추가</b> 또는 <b>홈 화면에 추가</b>를 선택합니다.</li>
-          <li><b>홈 화면</b> 또는 <b>앱 설치</b>를 선택해 완료합니다.</li>
-        </ol>`;
-    } else if (env.isAndroid) {
-      title='Android에서 홈 화면에 설치';
-      body=`
-        <p>브라우저가 자동 설치창을 아직 제공하지 않았습니다.</p>
-        <ol>
-          <li>브라우저의 <b>⋮ 메뉴</b>를 누릅니다.</li>
-          <li><b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 선택합니다.</li>
-          <li>설치를 확인합니다.</li>
-        </ol>`;
-    } else {
-      title='PC에서 앱으로 설치';
-      body=`
-        <p>브라우저의 앱 설치 기능을 사용하면 별도 창으로 실행할 수 있습니다.</p>
-        <ol>
-          <li>주소창 오른쪽의 <b>설치 아이콘</b>을 누르거나</li>
-          <li>브라우저 메뉴에서 <b>앱 설치</b>를 선택합니다.</li>
-        </ol>`;
-    }
-
-    setText(ui.installGuideTitle, title);
-    ui.installGuideBody.innerHTML = body;
-    ui.installGuideModal.hidden = false;
-  }
-
-  function refreshInstallUi() {
-    if (env.isStandalone) {
-      hideSmartInstall(false);
-      setPwaStatus('앱 실행 중', true);
-      return;
-    }
-
-    if (env.isIOS) {
-      showSmartInstall('홈 화면에 추가','Safari에서 홈 화면 바로가기로 설치할 수 있습니다.','추가 방법 보기');
-      setPwaStatus('Safari 공유 → 홈 화면에 추가', true);
-      return;
-    }
-
-    if (deferredPrompt) {
-      showSmartInstall(
-        env.isAndroid ? '홈 화면에 설치' : '앱으로 설치',
-        env.isAndroid
-          ? '버튼을 누르면 Android 설치창이 열립니다.'
-          : '버튼을 누르면 브라우저 설치창이 열립니다.',
-        env.isAndroid ? '지금 설치' : '앱으로 설치'
-      );
-      setPwaStatus('설치 가능', true);
-      return;
-    }
-
-    if (env.isKakao) {
-      showSmartInstall(
-        '앱 설치',
-        '카카오톡 내부 브라우저에서는 설치창을 직접 띄울 수 없어 Chrome으로 전환합니다.',
-        'Chrome에서 열기'
-      );
-      setPwaStatus('Chrome에서 설치');
-      return;
-    }
-
-    if (env.isAndroid) {
-      showSmartInstall(
-        '홈 화면에 설치',
-        env.isSamsung
-          ? '삼성 인터넷 메뉴에서 홈 화면에 추가할 수 있습니다.'
-          : '브라우저 메뉴에서 앱 설치/홈 화면에 추가를 사용할 수 있습니다.',
-        '설치 방법'
-      );
-    } else if (env.isDesktop) {
-      showSmartInstall(
-        '앱 설치',
-        '브라우저 설치 기능이 준비되지 않은 경우 설치 방법을 안내합니다.',
-        '설치 방법'
-      );
-    }
-
-    setPwaStatus('웹 실행');
-  }
-
-  async function fetchServerVersion() {
-    if (!/^https?:$/.test(location.protocol)) return null;
-    try {
-      const url = new URL('./app-version.json', location.href);
-      url.searchParams.set('_', Date.now().toString());
-      const response = await fetch(url.href, {
-        cache:'no-store',
-        headers:{'Cache-Control':'no-cache'}
-      });
-      if (!response.ok) throw new Error('version fetch failed');
-      const data = await response.json();
-      return String(data?.version || '').trim() || null;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  function versionsDiffer() {
-    return !!serverVersion && serverVersion !== CURRENT_APP_VERSION;
-  }
-
-  async function refreshServerVersionStatus() {
-    const latest = await fetchServerVersion();
-    if (!latest) {
-      setUpdateStatus('최신 버전 확인 실패', false);
-      return;
-    }
-    serverVersion = latest;
-    setUpdateStatus(
-      versionsDiffer() ? `새 버전 ${serverVersion} 있음` : `최신 ${CURRENT_APP_VERSION} 사용 중`,
-      versionsDiffer()
-    );
-  }
-
-  function watchRegistration(registration) {
-    registrationRef = registration;
-    if (registration.waiting && navigator.serviceWorker.controller) {
-      waitingWorker = registration.waiting;
-    }
-    registration.addEventListener('updatefound', () => {
-      const installing = registration.installing;
-      if (!installing) return;
-      installing.addEventListener('statechange', async () => {
-        if (installing.state === 'installed' && navigator.serviceWorker.controller) {
-          waitingWorker = registration.waiting || installing;
+  function watchRegistration(registration){
+    registrationRef=registration;
+    if(registration.waiting&&navigator.serviceWorker.controller)waitingWorker=registration.waiting;
+    registration.addEventListener('updatefound',()=>{
+      const installing=registration.installing;if(!installing)return;
+      installing.addEventListener('statechange',async()=>{
+        if(installing.state==='installed'&&navigator.serviceWorker.controller){
+          waitingWorker=registration.waiting||installing;
           await refreshServerVersionStatus();
         }
       });
     });
   }
 
-  async function waitForWaitingWorker(timeoutMs=6000) {
-    const start = Date.now();
-    while (Date.now() - start < timeoutMs) {
-      if (registrationRef?.waiting) {
-        waitingWorker = registrationRef.waiting;
-        return waitingWorker;
-      }
-      await new Promise(resolve => setTimeout(resolve, 180));
+  async function waitForWaitingWorker(timeoutMs=6000){
+    const start=Date.now();
+    while(Date.now()-start<timeoutMs){
+      if(registrationRef?.waiting){waitingWorker=registrationRef.waiting;return waitingWorker;}
+      await new Promise(resolve=>setTimeout(resolve,180));
     }
     return null;
   }
 
-  function forceFreshNavigation(param='app-update') {
-    const url = new URL(location.href);
-    url.searchParams.set(param, Date.now().toString());
-    location.replace(url.href);
+  function forceFreshNavigation(param='app-update'){
+    const url=new URL(location.href);url.searchParams.set(param,Date.now().toString());location.replace(url.href);
   }
 
-  async function applyWaitingUpdate() {
-    if (applyingUpdate) return;
-    applyingUpdate = true;
-    [ui.updateBtn, ui.mobileUpdateBtn].forEach(btn => { if (btn) btn.disabled = true; });
-    setUpdateStatus('업데이트 적용 중', false);
-
-    try {
+  async function applyWaitingUpdate(){
+    if(applyingUpdate)return;
+    applyingUpdate=true;
+    [ui.updateBtn,ui.mobileUpdateBtn].forEach(btn=>{if(btn)btn.disabled=true;});
+    setUpdateStatus('업데이트 적용 중',false);
+    try{
       await registrationRef?.update();
-      const worker = waitingWorker || await waitForWaitingWorker();
-      if (worker) {
-        waitingWorker = worker;
-        worker.postMessage({type:'SKIP_WAITING'});
-        return;
-      }
-      if (versionsDiffer()) {
-        forceFreshNavigation();
-        return;
-      }
+      const worker=waitingWorker||await waitForWaitingWorker();
+      if(worker){waitingWorker=worker;worker.postMessage({type:'SKIP_WAITING'});return;}
+      if(versionsDiffer()){forceFreshNavigation();return;}
       await refreshServerVersionStatus();
-    } catch (_) {
-      if (versionsDiffer()) forceFreshNavigation();
-      else setUpdateStatus('업데이트 적용 실패', true);
-    } finally {
-      applyingUpdate = false;
-    }
+    }catch(_){
+      if(versionsDiffer())forceFreshNavigation();
+      else setUpdateStatus('업데이트 적용 실패',true);
+    }finally{applyingUpdate=false;}
   }
 
-  async function triggerInstall() {
-    if (env.isStandalone) return;
+  setText(ui.version,CURRENT_APP_VERSION);setText(ui.mobileVersion,CURRENT_APP_VERSION);
 
-    if (env.isKakao) {
-      openCurrentPageInChrome();
-      return;
-    }
-
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      try { await deferredPrompt.userChoice; } catch (_) {}
-      deferredPrompt = null;
-      refreshInstallUi();
-      return;
-    }
-
-    showInstallGuide();
-  }
-
-  if (env.isAndroid || env.isIOS) {
-    localStorage.removeItem(INSTALL_DISMISS_KEY);
-  }
-
-  setText(ui.version, CURRENT_APP_VERSION);
-  setText(ui.mobileVersion, CURRENT_APP_VERSION);
-
-  window.addEventListener('beforeinstallprompt', event => {
-    event.preventDefault();
-    deferredPrompt = event;
-    if (ui.installBtn) ui.installBtn.hidden = false;
-    refreshInstallUi();
+  window.addEventListener('beforeinstallprompt',event=>{
+    event.preventDefault();deferredPrompt=event;if(ui.installBtn)ui.installBtn.hidden=isMobile;refreshInstallUi();
+  });
+  window.addEventListener('appinstalled',()=>{
+    deferredPrompt=null;if(ui.installBtn)ui.installBtn.hidden=true;hideInstallBar();setPwaStatus('앱 설치됨',true);
   });
 
-  window.addEventListener('appinstalled', () => {
-    deferredPrompt = null;
-    if (ui.installBtn) ui.installBtn.hidden = true;
-    hideSmartInstall(false);
-    setPwaStatus('앱 설치됨', true);
+  ui.installBtn?.addEventListener('click',triggerInstall);
+  ui.installAction?.addEventListener('click',triggerInstall);
+  ui.installDismiss?.addEventListener('click',()=>{
+    if(isMobile)return;localStorage.setItem(INSTALL_DISMISS_KEY,'1');hideInstallBar();
   });
+  ui.guideClose?.addEventListener('click',()=>{if(ui.guide)ui.guide.hidden=true;});
+  ui.guide?.addEventListener('click',e=>{if(e.target===ui.guide)ui.guide.hidden=true;});
+  ui.updateBtn?.addEventListener('click',applyWaitingUpdate);
+  ui.mobileUpdateBtn?.addEventListener('click',applyWaitingUpdate);
 
-  ui.installBtn?.addEventListener('click', triggerInstall);
-  ui.smartInstallAction?.addEventListener('click', triggerInstall);
-  ui.smartInstallDismiss?.addEventListener('click', () => {
-    if (env.isAndroid || env.isIOS) return;
-    hideSmartInstall(true);
-  });
-  ui.installGuideClose?.addEventListener('click', () => {
-    if (ui.installGuideModal) ui.installGuideModal.hidden = true;
-  });
-  ui.installGuideModal?.addEventListener('click', event => {
-    if (event.target === ui.installGuideModal) ui.installGuideModal.hidden = true;
-  });
-
-  ui.updateBtn?.addEventListener('click', applyWaitingUpdate);
-  ui.mobileUpdateBtn?.addEventListener('click', applyWaitingUpdate);
-
-  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (refreshing) return;
-      refreshing = true;
-      forceFreshNavigation('updated');
+  if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol)){
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(refreshing)return;refreshing=true;forceFreshNavigation('updated');
     });
-
-    navigator.serviceWorker.register('./sw.js', {
-      scope:'./',
-      updateViaCache:'none'
-    })
-      .then(async registration => {
-        watchRegistration(registration);
-        try { await registration.update(); } catch (_) {}
+    navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'})
+      .then(async registration=>{
+        watchRegistration(registration);try{await registration.update();}catch(_){}
         await refreshServerVersionStatus();
-      })
-      .catch(refreshServerVersionStatus);
-
-    window.setInterval(async () => {
-      try { await registrationRef?.update(); } catch (_) {}
+      }).catch(refreshServerVersionStatus);
+    window.setInterval(async()=>{
+      try{await registrationRef?.update();}catch(_){}
       await refreshServerVersionStatus();
-    }, 15 * 60 * 1000);
-
-    window.addEventListener('focus', refreshServerVersionStatus);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') refreshServerVersionStatus();
-    });
-  } else {
-    setUpdateStatus('웹 배포 시 업데이트 지원', false);
-  }
+    },15*60*1000);
+    window.addEventListener('focus',refreshServerVersionStatus);
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshServerVersionStatus();});
+  }else setUpdateStatus('웹 배포 시 업데이트 지원',false);
 
   refreshInstallUi();
 })();
@@ -9865,5 +9499,251 @@ render();
 <button id="installGuideClose" type="button">확인</button>
 </div>
 </div>
-</body>
+<script>
+(() => {
+  const MAX_HELPER_RESULTS = 10;
+  const normalize = value => String(value ?? '')
+    .normalize('NFKC')
+    .toLocaleLowerCase()
+    .replace(/\s+/g,'')
+    .replace(/[·ㆍ\-_'"()./]/g,'');
+
+  function pokemonCandidates(){
+    return (window.championsRoster || championsRoster || []).map(p => {
+      const ko=(window.koreanNames || koreanNames || {})[p.dex] || '';
+      return {
+        value:p.en,
+        main:ko ? `${ko} (${p.en})` : p.en,
+        sub:'포켓몬',
+        search:[ko,p.en].filter(Boolean)
+      };
+    });
+  }
+
+  function battlePokemonCandidates(){
+    if(typeof attackEntityOptions!=='function')return pokemonCandidates();
+    return attackEntityOptions().map(e=>({
+      value:e.id, main:e.label, sub:e.isMega?'메가폼':'포켓몬',
+      search:[e.label||'',e.item?.en||'',e.form?.suffix||'',e.id||''].filter(Boolean)
+    }));
+  }
+
+  function speedCandidates(){
+    if(typeof allSpeedEntities!=='function')return pokemonCandidates();
+    return allSpeedEntities().filter(e=>dexData[e.id]).map(e=>({
+      value:e.id, main:e.label, sub:e.isMega?'메가 스피드 기준':'스피드 기준',
+      search:[e.label||'',e.item?.en||'',e.form?.suffix||'',e.id||''].filter(Boolean)
+    }));
+  }
+
+  function moveCandidates(){
+    const data=(window.moveData || moveData || {});
+    const koMap=(window.koreanMoveNames || koreanMoveNames || {});
+    return Object.entries(data)
+      .filter(([,m])=>m?.name)
+      .map(([id,m])=>{
+        const ko=koMap[id] || '';
+        return {
+          value:id,
+          main:ko ? `${ko} (${m.name})` : m.name,
+          sub:m.category==='Status' ? '변화기' : `${m.type} · ${m.category==='Physical'?'물리':'특수'}`,
+          search:[ko,m.name,id].filter(Boolean)
+        };
+      });
+  }
+
+  function itemCandidates(){
+    const data=(window.championsItemData || championsItemData || {});
+    return Object.entries(data)
+      .filter(([id,item])=>id!=='none' && item?.name)
+      .map(([id,item])=>{
+        const ko=(window.koreanItemNames || koreanItemNames || {})[id] || '';
+        return {
+          value:id,
+          main:ko ? `${ko} (${item.name})` : item.name,
+          sub:item?.megaStone ? '메가스톤' : '도구',
+          search:[ko,item.name,id].filter(Boolean)
+        };
+      });
+  }
+
+  function getCandidates(kind){
+    if(kind==='pokemon')return pokemonCandidates();
+    if(kind==='battlePokemon')return battlePokemonCandidates();
+    if(kind==='speed')return speedCandidates();
+    if(kind==='move')return moveCandidates();
+    if(kind==='item')return itemCandidates();
+    return [];
+  }
+
+  function scoreCandidate(candidate, query){
+    if(!query)return 10;
+    const values=candidate.search.map(normalize);
+    let best=999;
+    values.forEach(v=>{
+      if(v===query)best=Math.min(best,0);
+      else if(v.startsWith(query))best=Math.min(best,1);
+      else if(v.includes(query))best=Math.min(best,2);
+    });
+    return best;
+  }
+
+  function helperMatches(kind, rawQuery){
+    const q=normalize(rawQuery);
+    return getCandidates(kind)
+      .map(c=>({...c,score:scoreCandidate(c,q)}))
+      .filter(c=>!q || c.score<999)
+      .sort((a,b)=>a.score-b.score || a.main.localeCompare(b.main,'ko'))
+      .slice(0,MAX_HELPER_RESULTS);
+  }
+
+  function targetSelectForSearch(input){
+    const map={
+      pokemonSearch:'pokemon',
+      attackPokemonSearch:'attackPokemonSelect',
+      offenseTargetSearch:'offenseTargetSelect',
+      speedPokemonSearch:'speedTargetSelect',
+      sampleItemSearch:'heldItem',
+      attackMoveSearch:'attackMoveSelect',
+      offenseMoveSearch:'offenseMoveSelect',
+      sampleMoveSearch1:'sampleMove1',
+      sampleMoveSearch2:'sampleMove2',
+      sampleMoveSearch3:'sampleMove3',
+      sampleMoveSearch4:'sampleMove4',
+      mobileQuickMoveSearch1:'mobileQuickMove1',
+      mobileQuickMoveSearch2:'mobileQuickMove2',
+      mobileQuickMoveSearch3:'mobileQuickMove3',
+      mobileQuickMoveSearch4:'mobileQuickMove4'
+    };
+    return document.getElementById(map[input.id]||'');
+  }
+
+  function chooseCandidate(input,candidate){
+    const select=targetSelectForSearch(input);
+    const kind=input.dataset.searchHelperKind;
+
+    if(kind==='speed'){
+      input.value=candidate.main;
+      input.dispatchEvent(new Event('input',{bubbles:true}));
+      window.setTimeout(()=>{
+        if(typeof renderSpeedPanel==='function')renderSpeedPanel();
+        const rows=Array.from(document.querySelectorAll('#speedList .speed-row[data-entity-id]'))
+          .filter(row=>row.dataset.entityId===candidate.value);
+        if(!rows.length)return;
+        const speedType=document.getElementById('speedType')?.value||'both';
+        let preferred=rows[0];
+        if(speedType==='both')preferred=rows.find(r=>r.dataset.benchmarkType==='준속')||rows[0];
+        else if(speedType==='positive')preferred=rows.find(r=>r.dataset.benchmarkType==='최속')||rows[0];
+        else if(speedType==='uninvested')preferred=rows.find(r=>r.dataset.benchmarkType==='무보정')||rows[0];
+        preferred?.click();
+      },0);
+      hideHelper(input);
+      return;
+    }
+
+    if(kind==='pokemon'||kind==='battlePokemon'){
+      input.value=candidate.main;
+      input.dispatchEvent(new Event('input',{bubbles:true}));
+      window.setTimeout(()=>{
+        if(!select)return;
+        const option=Array.from(select.options).find(o=>o.value===candidate.value);
+        if(option){
+          select.value=candidate.value;
+          select.dispatchEvent(new Event('change',{bubbles:true}));
+        }
+      },0);
+      hideHelper(input);
+      return;
+    }
+
+    input.value=candidate.main;
+    input.dispatchEvent(new Event('input',{bubbles:true}));
+    window.setTimeout(()=>{
+      if(select){
+        let option=Array.from(select.options).find(o=>o.value===candidate.value);
+        if(!option){
+          input.value='';
+          input.dispatchEvent(new Event('input',{bubbles:true}));
+          option=Array.from(select.options).find(o=>o.value===candidate.value);
+        }
+        if(option){
+          select.value=candidate.value;
+          select.dispatchEvent(new Event('change',{bubbles:true}));
+        }
+      }
+    },0);
+    hideHelper(input);
+  }
+
+  function renderHelper(input){
+    const helper=document.getElementById(`${input.id}Helper`);
+    if(!helper)return;
+    const kind=input.dataset.searchHelperKind;
+    const matches=helperMatches(kind,input.value);
+
+    helper.innerHTML='';
+    if(!matches.length){
+      const empty=document.createElement('div');
+      empty.className='search-helper-empty';
+      empty.textContent='일치하는 후보가 없습니다.';
+      helper.appendChild(empty);
+      helper.hidden=false;
+      return;
+    }
+
+    matches.forEach(candidate=>{
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='search-helper-item';
+      btn.setAttribute('role','option');
+      btn.innerHTML=`<span class="search-helper-main"></span><span class="search-helper-sub"></span>`;
+      btn.querySelector('.search-helper-main').textContent=candidate.main;
+      btn.querySelector('.search-helper-sub').textContent=candidate.sub;
+      btn.addEventListener('mousedown',e=>e.preventDefault());
+      btn.addEventListener('click',()=>chooseCandidate(input,candidate));
+      helper.appendChild(btn);
+    });
+    helper.hidden=false;
+  }
+
+  function hideHelper(input){
+    const helper=document.getElementById(`${input.id}Helper`);
+    if(helper)helper.hidden=true;
+  }
+
+  document.querySelectorAll('[data-search-helper-kind]').forEach(input=>{
+    input.addEventListener('focus',()=>renderHelper(input));
+    input.addEventListener('input',()=>renderHelper(input));
+    input.addEventListener('keydown',event=>{
+      const helper=document.getElementById(`${input.id}Helper`);
+      if(!helper || helper.hidden)return;
+      const buttons=Array.from(helper.querySelectorAll('.search-helper-item'));
+      if(!buttons.length)return;
+      let active=buttons.findIndex(b=>b.classList.contains('is-active'));
+
+      if(event.key==='ArrowDown'){
+        event.preventDefault();
+        if(active>=0)buttons[active].classList.remove('is-active');
+        active=(active+1)%buttons.length;
+        buttons[active].classList.add('is-active');
+        buttons[active].scrollIntoView({block:'nearest'});
+      }else if(event.key==='ArrowUp'){
+        event.preventDefault();
+        if(active>=0)buttons[active].classList.remove('is-active');
+        active=active<=0?buttons.length-1:active-1;
+        buttons[active].classList.add('is-active');
+        buttons[active].scrollIntoView({block:'nearest'});
+      }else if(event.key==='Enter' && active>=0){
+        event.preventDefault();
+        buttons[active].click();
+      }else if(event.key==='Escape'){
+        hideHelper(input);
+      }
+    });
+    input.addEventListener('blur',()=>window.setTimeout(()=>hideHelper(input),120));
+  });
+
+  // Data arrives asynchronously; reopening/focusing always reads current data.
+})();
+</script></body>
 </html>
